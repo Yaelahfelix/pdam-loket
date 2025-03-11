@@ -5,10 +5,14 @@ import clsx from "clsx";
 
 interface Props {
   title: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   isActive?: boolean;
   href?: string;
 }
+
+const formatText = (text: string) => {
+  return text.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
   const { collapsed, setCollapsed } = useSidebarContext();
@@ -32,8 +36,8 @@ export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
         )}
         onClick={handleClick}
       >
-        {icon}
-        <span className="text-default-900">{title}</span>
+        {/* {icon} */}
+        <span className="text-default-900 capitalize">{formatText(title)}</span>
       </div>
     </NextLink>
   );

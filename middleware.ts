@@ -6,19 +6,15 @@ export function middleware(request: NextRequest) {
 
   if (
     (pathname === "/login" || pathname === "/register") &&
-    request.cookies.has("userAuth")
+    request.cookies.has("token")
   )
-    return NextResponse.redirect(new URL("/", request.url));
-
-  if (
-    (pathname === "/" || pathname === "/accounts") &&
-    !request.cookies.has("userAuth")
-  )
+    return NextResponse.redirect(new URL("/admin", request.url));
+  else if (pathname.startsWith("/admin") && !request.cookies.has("token"))
     return NextResponse.redirect(new URL("/login", request.url));
 
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: ["/", "/accounts", "/login", "/register"],
-};
+// export const config = {
+//   matcher: ["/", "/accounts", "/login", "/register"],
+// };

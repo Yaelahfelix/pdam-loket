@@ -1,3 +1,4 @@
+import { Accordion, AccordionItem } from "@heroui/react";
 import React from "react";
 
 interface Props {
@@ -8,8 +9,16 @@ interface Props {
 export const SidebarMenu = ({ title, children }: Props) => {
   return (
     <div className="flex gap-2 flex-col">
-      <span className="text-xs font-normal ">{title}</span>
-      {children}
+      <Accordion>
+        <AccordionItem
+          key={title}
+          aria-label={title}
+          title={title}
+          className="capitalize"
+        >
+          {children}
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 };

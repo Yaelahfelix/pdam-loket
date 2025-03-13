@@ -5,6 +5,7 @@ export interface User {
   jabatan: string;
   kodeloket: string;
   role: string;
+  role_id: number;
   is_user_ppob: boolean;
   is_active: boolean;
   is_user_timtagih: boolean;

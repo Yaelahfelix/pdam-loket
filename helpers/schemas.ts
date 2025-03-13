@@ -10,7 +10,7 @@ export const UserSchema = yup.object().shape({
   password: yup.string().max(100).required("Password is required"),
   nama: yup.string().max(50).required("Nama is required"),
   jabatan: yup.string().max(50).required("Jabatan is required"),
-  role_id: yup.number().integer().required("Role ID is required"),
+  role_id: yup.number().integer().required("Role is required"),
   is_user_ppob: yup.boolean().required("PPOB status is required"),
   is_active: yup.boolean().required("Active status is required"),
   is_user_timtagih: yup.boolean().required("Tim Tagih status is required"),

@@ -13,11 +13,11 @@ import bcrypt from "bcryptjs";
 
 interface UserRecord extends RowDataPacket, User {}
 export const GET = async (request: NextRequest) => {
-  // const authResult = await verifyAuth(request);
+  const authResult = await verifyAuth(request);
 
-  // if (!authResult.isAuthenticated) {
-  //   return NextResponse.json({ error: authResult.error }, { status: 401 });
-  // }
+  if (!authResult.isAuthenticated) {
+    return NextResponse.json({ error: authResult.error }, { status: 401 });
+  }
 
   const { searchParams } = new URL(request.url);
   const query = searchParams.get("q");
@@ -34,6 +34,7 @@ SELECT
   u.nama, 
   u.jabatan, 
   r.role, 
+  u.role_id,
   u.is_user_ppob, 
   u.is_active, 
   u.is_user_timtagih,
@@ -141,7 +142,7 @@ export const POST = async (request: NextRequest) => {
 
     if (userCheck[0].count > 0) {
       return NextResponse.json(
-        { error: "Username already exists" },
+        { error: "Username sudah ada, silahkan coba yang lain!" },
         { status: 409 }
       );
     }
@@ -166,8 +167,133 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json({
       status: 200,
-      message: "User successfully created",
+      message: "Berhasil membuat user",
       result,
+    });
+  } catch (error: any) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        status: error.status || 500,
+        message: error.message || "Internal server error",
+      },
+      { status: error.status || 500 }
+    );
+  }
+};
+
+export const PUT = async (request: NextRequest) => {
+  try {
+    const db = await getConnection();
+    const authResult = await verifyAuth(request);
+
+    if (!authResult.isAuthenticated) {
+      return NextResponse.json({ error: authResult.error }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const {
+      id,
+      nama,
+      jabatan,
+      role_id,
+      is_user_ppob,
+      is_active,
+      is_user_timtagih,
+    } = body;
+
+    if (
+      !id ||
+      !nama ||
+      !jabatan ||
+      role_id === undefined ||
+      is_user_ppob === undefined ||
+      is_active === undefined ||
+      is_user_timtagih === undefined
+    ) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const checkUserQuery = `SELECT COUNT(*) AS count FROM users WHERE id = ?`;
+    const [userCheck] = await db.query<RowDataPacket[]>(checkUserQuery, [id]);
+
+    if (userCheck[0].count === 0) {
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    const updateQuery = `
+      UPDATE users 
+      SET nama = ?, jabatan = ?, role_id = ?, is_user_ppob = ?, is_active = ?, is_user_timtagih = ?
+      WHERE id = ?
+    `;
+
+    await db.query(updateQuery, [
+      nama,
+      jabatan,
+      role_id,
+      is_user_ppob,
+      is_active,
+      is_user_timtagih,
+      id,
+    ]);
+
+    return NextResponse.json({
+      status: 200,
+      message: "Berhasil mengupdate user",
+    });
+  } catch (error: any) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        status: error.status || 500,
+        message: error.message || "Internal server error",
+      },
+      { status: error.status || 500 }
+    );
+  }
+};
+
+export const DELETE = async (request: NextRequest) => {
+  try {
+    const db = await getConnection();
+    const authResult = await verifyAuth(request);
+
+    if (!authResult.isAuthenticated) {
+      return NextResponse.json({ error: authResult.error }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Missing required field: id" },
+        { status: 400 }
+      );
+    }
+
+    const checkUserQuery = `SELECT COUNT(*) AS count FROM users WHERE id = ?`;
+    const [userCheck] = await db.query<RowDataPacket[]>(checkUserQuery, [id]);
+
+    if (userCheck[0].count === 0) {
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    const deleteQuery = `DELETE FROM users WHERE id = ?`;
+    await db.query(deleteQuery, [id]);
+
+    return NextResponse.json({
+      status: 200,
+      message: "Berhasil menghapus user",
     });
   } catch (error: any) {
     console.log(error);

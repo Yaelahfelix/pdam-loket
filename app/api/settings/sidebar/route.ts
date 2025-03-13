@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const aplikasiId = process.env.APLIKASI_DB_ID;
 
     // ! Select menu utama dari aplikasi id
-    const query = `SELECT mu.namamenu as group_name, md.menu_id, md.namamenu as menu_name FROM menuutama mu LEFT JOIN menudetail md ON mu.id = md.menu_id WHERE mu.aplikasi_id = 1 ORDER BY mu.indek ASC, md.indek ASC;
+    const query = `SELECT mu.namamenu as group_name, md.menu_id, md.namamenu as menu_name FROM menuutama mu LEFT JOIN menudetail md ON mu.id = md.menu_id WHERE mu.aplikasi_id = ? ORDER BY mu.indek ASC, md.indek ASC;
 `;
     const [menuUtama] = await db.query<RowDataPacket[]>(query, [aplikasiId]);
 

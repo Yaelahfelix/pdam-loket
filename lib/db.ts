@@ -27,7 +27,7 @@ async function connectWithRetry(retries = 0): Promise<Pool> {
     }
 
     return pool;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Connection attempt ${retries + 1} failed:`, error);
 
     pool = null;

@@ -60,7 +60,7 @@ export const setSession = async (
       SECRET_KEY
     );
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set("token", token);
   } catch (error: any) {
     return {
@@ -71,7 +71,7 @@ export const setSession = async (
 };
 
 export const getSession = async () => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   const token = cookieStore.get("token");
   if (!token) {

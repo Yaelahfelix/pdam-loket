@@ -7,6 +7,10 @@ import {
   getSortedRowModel,
   SortingState,
   useReactTable,
+  RowData,
+  ExpandedState,
+  getExpandedRowModel,
+  Row,
 } from "@tanstack/react-table";
 
 import {
@@ -18,24 +22,35 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination, Select, SelectItem } from "@heroui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { PaginationResultType } from "@/types/pagination";
 import { useRouter } from "next/navigation";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import useUpdateQuery from "@/components/hooks/useUpdateQuery";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    getRowCanExpand: (row: Row<TData>) => boolean;
+    renderRowAccordionContent: (row: Row<TData>) => React.ReactNode;
+  }
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pagination: PaginationResultType;
-  url: string;
   limitPage: string;
+  renderRowAccordionContent: (row: TData) => React.ReactNode;
+  canExpand?: (row: TData) => boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pagination,
-  url,
   limitPage,
+  renderRowAccordionContent,
+  canExpand = () => true,
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useState<number>(
     pagination.currentPage
@@ -44,25 +59,49 @@ export function DataTable<TData, TValue>({
   const [hasMounted, sethasMounted] = useState(false);
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    onExpandedChange: setExpanded,
     state: {
       sorting,
+      expanded,
+    },
+    meta: {
+      getRowCanExpand: (row) => canExpand(row.original),
+      renderRowAccordionContent: (row) =>
+        renderRowAccordionContent(row.original),
     },
   });
 
+  const updateQuery = useUpdateQuery();
   useEffect(() => {
     if (!hasMounted) {
       sethasMounted(true);
       return;
     }
 
-    router.replace(`${url}?page=${currentPage}&limit=${limit}`);
-  }, [currentPage, limit]);
+    updateQuery({ page: currentPage, limit });
+  }, [currentPage, limit, router]);
+
+  useEffect(() => {
+    setCurrentPage(pagination.currentPage);
+  }, [pagination.currentPage]);
+
+  const handleRowClick = (row: Row<TData>) => {
+    if (canExpand(row.original)) {
+      setExpanded((prev: any) => ({
+        ...prev,
+        [row.id]: !prev[row.id],
+      }));
+    }
+  };
 
   return (
     <div className="">
@@ -88,16 +127,45 @@ export function DataTable<TData, TValue>({
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
+              <>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={`${
+                    canExpand(row.original)
+                      ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                      : ""
+                  }`}
+                  onClick={() => handleRowClick(row)}
+                >
+                  {row.getVisibleCells().map((cell, index) => (
+                    <TableCell key={cell.id}>
+                      {index === 0 && canExpand(row.original) && (
+                        <span className="inline-block mr-2">
+                          {row.getIsExpanded() ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </span>
+                      )}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.getIsExpanded() && (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="p-0">
+                      <div className="px-4 py-2 bg-gray-50 dark:bg-stone-900">
+                        {table.options.meta?.renderRowAccordionContent(row)}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
             ))
           ) : (
             <TableRow>
@@ -114,7 +182,10 @@ export function DataTable<TData, TValue>({
           label="Limit per page"
           required
           value={limit}
-          onChange={(val) => setLimit(val.target.value)}
+          onChange={(val) => {
+            setLimit(val.target.value);
+            setCurrentPage(1);
+          }}
           defaultSelectedKeys={[limit]}
           disallowEmptySelection
         >

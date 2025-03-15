@@ -14,6 +14,10 @@ export interface User {
 
 export interface UserLoket {
   id: number;
+  loket_id: number;
   kodeloket: string;
   loket: string;
+  user_id: number;
+  aktif: boolean;
+  is_loket_aktif: boolean;
 }

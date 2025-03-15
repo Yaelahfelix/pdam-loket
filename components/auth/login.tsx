@@ -30,6 +30,7 @@ export const Login = () => {
   const [user, setUser] = useState<User>();
   const [loket, setLoket] = useState<UserLoket[]>();
   const [selectedLoket, setSelectedLoket] = useState<UserLoket>();
+  const [error, setError] = useState("");
 
   const initialValues: LoginFormType = {
     username: "",
@@ -51,7 +52,10 @@ export const Login = () => {
         })
         .catch((err: AxiosError<ErrorResponse>) => {
           setFieldError("password", err.response?.data.message);
-          return addToast(errToast_INTERNALSERVER);
+          return addToast({
+            title: "Gagal login!",
+            ...errToast_INTERNALSERVER,
+          });
         })
         .finally(() => setIsLoading(false));
     },
@@ -59,9 +63,20 @@ export const Login = () => {
   );
 
   const handleLoket = async () => {
+    setError("");
     setIsLoading(true);
     if (!user || !selectedLoket) {
       return addToast(errToast_INTERNALSERVER);
+    }
+    if (!selectedLoket.aktif) {
+      setError("Loket kamu tidak aktif, coba loket lain!");
+      return setIsLoading(false);
+    }
+    if (!selectedLoket.is_loket_aktif) {
+      setError(
+        "Loket yang kamu pilih sedang tidak aktif, silahkan hubungi admin"
+      );
+      return setIsLoading(false);
     }
     setSession(
       user.username,
@@ -71,13 +86,14 @@ export const Login = () => {
       selectedLoket?.kodeloket,
       user.is_user_ppob,
       user.is_active,
-      user.is_user_timtagih
+      user.is_user_timtagih,
+      user.role_id
     )
       .then(() => router.push("/admin"))
       .catch((err) => {
+        setIsLoading(false);
         return addToast(errToast_INTERNALSERVER);
-      })
-      .finally(() => setIsLoading(false));
+      });
   };
   return (
     <>
@@ -134,6 +150,8 @@ export const Login = () => {
             <Select
               className="w-full"
               placeholder="Pilih loket"
+              isInvalid={error ? true : false}
+              errorMessage={error}
               value={selectedLoket?.loket}
               onChange={(val) => {
                 const newSelectLoket = loket.find(

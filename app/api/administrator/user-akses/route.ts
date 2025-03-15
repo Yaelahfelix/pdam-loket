@@ -44,9 +44,13 @@ SELECT
     WHEN COUNT(l.id) = 0 THEN NULL 
     ELSE JSON_ARRAYAGG(
       JSON_OBJECT( 
-        'id', l.id,
+        'id', ul.id,
+        'loket_id', l.id,
         'kodeloket', l.kodeloket,
-        'loket', l.loket
+        'loket', l.loket,
+        'user_id', u.id,
+        'aktif', ul.aktif
+        'is_loket_aktif', l.aktif
       )
     ) 
   END as loket_array
@@ -142,7 +146,10 @@ export const POST = async (request: NextRequest) => {
 
     if (userCheck[0].count > 0) {
       return NextResponse.json(
-        { error: "Username sudah ada, silahkan coba yang lain!" },
+        {
+          status: 409,
+          message: "Username sudah ada, silahkan coba yang lain!",
+        },
         { status: 409 }
       );
     }

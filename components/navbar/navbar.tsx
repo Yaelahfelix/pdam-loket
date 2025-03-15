@@ -8,6 +8,7 @@ import { BurguerButton } from "./burguer-button";
 import { NotificationsDropdown } from "./notifications-dropdown";
 import { UserDropdown } from "./user-dropdown";
 import { User } from "@/types/user";
+import { DarkMode } from "./darkmodeswitch";
 
 interface Props {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ export const NavbarWrapper = ({ children, user }: Props) => {
       >
         <NavbarContent className="flex flex-row-reverse w-full ">
           <UserDropdown user={user} />
+          <DarkMode />
         </NavbarContent>
       </Navbar>
       {children}

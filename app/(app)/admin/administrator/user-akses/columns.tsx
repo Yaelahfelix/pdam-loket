@@ -1,7 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { LPPRekAirType } from "./type";
 import { User } from "@/types/user";
 import Actions from "./actions";
 import { Chip } from "@heroui/react";

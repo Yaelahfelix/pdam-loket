@@ -40,7 +40,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   pagination: PaginationResultType;
   limitPage: string;
-  renderRowAccordionContent: (row: TData) => React.ReactNode;
+  renderRowAccordionContent?: (row: TData) => React.ReactNode;
   canExpand?: (row: TData) => boolean;
 }
 
@@ -50,7 +50,7 @@ export function DataTable<TData, TValue>({
   pagination,
   limitPage,
   renderRowAccordionContent,
-  canExpand = () => true,
+  canExpand = () => false,
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useState<number>(
     pagination.currentPage
@@ -60,6 +60,10 @@ export function DataTable<TData, TValue>({
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [expanded, setExpanded] = useState<ExpandedState>({});
+
+  useEffect(() => {
+    setExpanded({});
+  }, [data]);
 
   const table = useReactTable({
     data,
@@ -76,7 +80,7 @@ export function DataTable<TData, TValue>({
     meta: {
       getRowCanExpand: (row) => canExpand(row.original),
       renderRowAccordionContent: (row) =>
-        renderRowAccordionContent(row.original),
+        renderRowAccordionContent!(row.original),
     },
   });
 

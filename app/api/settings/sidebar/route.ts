@@ -1,16 +1,29 @@
 import getConnection from "@/lib/db";
+import { verifyAuth } from "@/lib/session";
 import { RowDataPacket } from "mysql2";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
+    const authResult = await verifyAuth(request);
+    if (!authResult.isAuthenticated || !authResult.user) {
+      return NextResponse.json({ error: authResult.error }, { status: 401 });
+    }
     const db = await getConnection();
+
     const aplikasiId = process.env.APLIKASI_DB_ID;
 
     // ! Select menu utama dari aplikasi id
-    const query = `SELECT mu.namamenu as group_name, md.menu_id, md.namamenu as menu_name FROM menuutama mu LEFT JOIN menudetail md ON mu.id = md.menu_id WHERE mu.aplikasi_id = ? ORDER BY mu.indek ASC, md.indek ASC;
-`;
-    const [menuUtama] = await db.query<RowDataPacket[]>(query, [aplikasiId]);
+    const query = `
+    SELECT mu.namamenu as group_name, md.menu_id, md.namamenu as menu_name FROM menuutama mu 
+LEFT JOIN menudetail md ON mu.id = md.menu_id
+LEFT JOIN role_akses ra ON ra.menu_id = md.id
+ WHERE mu.aplikasi_id = ? AND ra.role_id = ? ORDER BY mu.indek ASC, md.indek ASC;
+    `;
+    const [menuUtama] = await db.query<RowDataPacket[]>(query, [
+      aplikasiId,
+      authResult.user?.role_id,
+    ]);
 
     // ! Mengelompokkan menu dari respon
     const groupedMenu = menuUtama.reduce((acc: any, row) => {

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     // ! Query ke db
-    const query = `SELECT u.id, u.username, u.password, u.nama, u.jabatan, r.role, u.is_user_ppob, u.is_active, u.is_user_timtagih
+    const query = `SELECT u.id, u.username, u.password, u.nama, u.jabatan, u.role_id, r.role, u.is_user_ppob, u.is_active, u.is_user_timtagih
   FROM users u 
   LEFT JOIN role r ON r.id = u.role_id WHERE u.username = ?;
   `;
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     // ! Cek loket user
     const queryLoket = `
-    SELECT l.kodeloket, l.loket
+    SELECT l.kodeloket, l.loket, l.aktif as is_loket_aktif, ul.aktif
   FROM user_loket ul 
   LEFT JOIN loket l 
   ON ul.loket_id = l.id WHERE ul.user_id = ? AND l.aktif = 1;

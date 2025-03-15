@@ -1,13 +1,14 @@
 import React from "react";
 import { useTheme as useNextTheme } from "next-themes";
-import { Switch } from "@heroui/react";
+import { DarkModeSwitch } from "react-toggle-dark-mode";
 
-export const DarkModeSwitch = () => {
+export const DarkMode = () => {
   const { setTheme, resolvedTheme } = useNextTheme();
   return (
-    <Switch
-      isSelected={resolvedTheme === "dark" ? true : false}
-      onValueChange={(e) => setTheme(e ? "dark" : "light")}
+    <DarkModeSwitch
+      checked={resolvedTheme === "dark" ? true : false}
+      onChange={(e) => setTheme(e ? "dark" : "light")}
+      size={20}
     />
   );
 };

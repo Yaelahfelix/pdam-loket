@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { User } from "./types/user";
+import { MenuGroup } from "./types/settings";
+
+const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -11,10 +16,22 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin", request.url));
   else if (pathname.startsWith("/admin") && !request.cookies.has("token"))
     return NextResponse.redirect(new URL("/login", request.url));
+  else if (pathname.startsWith("/admin")) {
+    const tokenCookie = request.cookies.get("token");
+    const token = tokenCookie?.value;
+    const settingsCookie = request.cookies.get("settings");
+    const settings = settingsCookie?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+    if (settings) {
+      const decodedSettings = jwt.verify(settings, SECRET_KEY!) as JwtPayload;
+      const sidebar: MenuGroup[] = decodedSettings as MenuGroup[];
+    }
+  }
 
   return NextResponse.next();
 }
-
 // export const config = {
 //   matcher: ["/", "/accounts", "/login", "/register"],
 // };

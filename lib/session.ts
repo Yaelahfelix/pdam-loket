@@ -1,7 +1,7 @@
 "use server";
 
 import { User } from "@/types/user";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
@@ -22,10 +22,11 @@ export const verifyAuth = async (request: NextRequest) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decodedToken = jwt.verify(token, SECRET_KEY);
+    const decodedToken = jwt.verify(token, SECRET_KEY) as JwtPayload;
+    const user: User = decodedToken as User;
     return {
       isAuthenticated: true,
-      user: decodedToken,
+      user,
     };
   } catch (error) {
     return {
@@ -43,7 +44,8 @@ export const setSession = async (
   kodeloket: string,
   is_user_ppob: boolean,
   is_active: boolean,
-  is_user_timtagih: boolean
+  is_user_timtagih: boolean,
+  role_id: number
 ) => {
   try {
     const token = jwt.sign(
@@ -52,6 +54,7 @@ export const setSession = async (
         nama,
         jabatan,
         role,
+        role_id,
         kodeloket,
         is_user_ppob,
         is_active,

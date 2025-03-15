@@ -10,12 +10,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "../ui/resizable";
-import { getSidebar, setSidebar } from "@/lib/settings";
 import axios from "axios";
 import { Spinner } from "@heroui/spinner";
 import { getSession } from "@/lib/session";
 import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
+import { getSidebar, setSidebar } from "@/lib/sidebar";
+import { MenuGroup } from "@/types/settings";
 
 interface Props {
   children: React.ReactNode;
@@ -26,24 +27,31 @@ export const Layout = ({ children }: Props) => {
   const [user, setUser] = useState<User>();
   const [isLoading, setIsLoading] = useState(false);
   const [_, setLocked] = useLockedBody(false);
+  const [sidebar, setSidebar] = useState<MenuGroup[]>();
   const handleToggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
     setLocked(!sidebarOpen);
   };
   const router = useRouter();
-  const sidebar = getSidebar();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
 
       try {
+        const sidebar = await getSidebar();
+        const session = await getSession();
         if (!sidebar) {
-          const res = await axios.get("/api/settings/sidebar");
+          const res = await axios.get("/api/settings/sidebar", {
+            headers: {
+              Authorization: `Bearer ${session?.token.value}`,
+            },
+          });
           setSidebar(res.data.menu);
+        } else {
+          setSidebar(sidebar);
         }
 
-        const session = await getSession();
         if (!session) {
           router.replace("/login");
         } else {

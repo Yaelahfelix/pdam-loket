@@ -17,13 +17,17 @@ import useUpdateQuery from "@/components/hooks/useUpdateQuery";
 import { RotateCw } from "lucide-react";
 import { Form } from "./form";
 import { useRoleStore } from "@/store/role";
+import { Loket } from "@/types/loket";
+import { useLoketStore } from "@/store/userloket";
 
 function TableFunction({
   roles,
+  loket,
   filter,
   limit,
 }: {
   roles: Role[];
+  loket: Loket[];
   filter: {
     is_user_active: boolean | null;
     is_user_ppob: boolean | null;
@@ -37,6 +41,7 @@ function TableFunction({
   const updateQuery = useUpdateQuery();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { setRoles } = useRoleStore();
+  const { setLoket } = useLoketStore();
 
   useEffect(() => {
     if (query) {
@@ -48,6 +53,7 @@ function TableFunction({
 
   useEffect(() => {
     setRoles(roles);
+    setLoket(loket);
   }, []);
   return (
     <div className="flex justify-between flex-wrap gap-4 items-center">
@@ -149,9 +155,6 @@ function TableFunction({
           Add User
         </Button>
         <Form roles={roles} diclosure={{ isOpen, onOpenChange }}></Form>
-        <Button color="primary" startContent={<ExportIcon />}>
-          Export to CSV
-        </Button>
       </div>
     </div>
   );

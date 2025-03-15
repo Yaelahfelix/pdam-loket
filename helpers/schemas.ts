@@ -15,3 +15,21 @@ export const UserSchema = yup.object().shape({
   is_active: yup.boolean().required("Active status is required"),
   is_user_timtagih: yup.boolean().required("Tim Tagih status is required"),
 });
+
+export const UserLoketSchema = yup.object().shape({
+  user_id: yup.number().required("User ID is required"),
+  loket_id: yup.number().required("Loket ID is required"),
+  aktif: yup.boolean().required("Status is required"),
+});
+
+export const MasterLoketSchema = yup.object().shape({
+  kodeloket: yup.string().max(50).required("Kode Loket is required"),
+  loket: yup.string().max(50).required("Nama Loket is required"),
+  aktif: yup.boolean().required("Aktif status is required"),
+});
+
+export const MasterKolektifSchema = yup.object().shape({
+  no_kolektif: yup.string().max(50).required("Nomor kolektif is required"),
+  nama: yup.string().max(50).required("Nama kolektif is required"),
+  telp: yup.string().max(50).optional(),
+});

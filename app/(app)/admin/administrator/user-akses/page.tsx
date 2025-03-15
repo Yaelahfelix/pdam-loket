@@ -5,13 +5,16 @@ import { columns } from "./columns";
 import axios, { AxiosError } from "axios";
 import { BASEURL } from "@/constant";
 import { getSession } from "@/lib/session";
-import { deleteSidebar } from "@/lib/settings";
 import { deleteAuthCookie } from "@/actions/auth.action";
 import { redirect } from "next/navigation";
 import TableFunction from "./tableFunction";
 import { getAllRole } from "@/lib/dbQuery/role";
-import { canTableDetail, tableDetail } from "./detailTableRow";
+import { canTableDetail, TableDetail } from "./detailTableRow";
 import { SegmentPrefixRSCPathnameNormalizer } from "next/dist/server/normalizers/request/segment-prefix-rsc";
+import BreadcrumbsComponent from "./breadcrumbs";
+import { deleteSidebar } from "@/lib/sidebar";
+import { getAllUserLoket } from "@/lib/dbQuery/userLoket";
+import DataTableClient from "./data-table";
 
 const getData = async (
   page: number,
@@ -56,8 +59,8 @@ const getData = async (
   } catch (err) {
     if (err instanceof AxiosError) {
       if (err.status === 401) {
-        deleteSidebar();
-        deleteAuthCookie();
+        await deleteSidebar();
+        await deleteAuthCookie();
         redirectPath = "/login";
       }
     }
@@ -108,28 +111,15 @@ const UserAkses = async ({
     params.q as string
   );
   const roles = await getAllRole();
+  const loket = await getAllUserLoket();
+  console.log(loket);
   return (
     <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
-      <ul className="flex gap-2">
-        <li className="flex gap-2">
-          <Link href={"/admin"}>
-            <span>Dashboard</span>
-          </Link>
-          <span>/</span>
-        </li>
-
-        <li className="flex gap-2">
-          <span>Administrator</span>
-          <span> / </span>{" "}
-        </li>
-        <li className="flex gap-2">
-          <span>User Akses</span>
-        </li>
-      </ul>
-
+      <BreadcrumbsComponent />
       <h3 className="text-xl font-semibold">User Akses</h3>
 
       <TableFunction
+        loket={loket}
         roles={roles}
         filter={{
           is_user_active: isUserActive,
@@ -138,14 +128,7 @@ const UserAkses = async ({
         }}
         limit={(params.limit as string) || "10"}
       />
-      <DataTable
-        columns={columns}
-        data={data.data}
-        pagination={data.pagination}
-        limitPage={(params.limit as string) || "10"}
-        renderRowAccordionContent={tableDetail}
-        canExpand={canTableDetail}
-      />
+      <DataTableClient columns={columns} data={data} params={params} />
       {/* <div className="max-w-[95rem] mx-auto w-full">
         <TableWrapper />
       </div> */}

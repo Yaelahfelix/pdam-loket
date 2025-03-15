@@ -5,9 +5,14 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   useDisclosure,
 } from "@heroui/react";
-import { EllipsisVertical, Pencil, Plus, Trash } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 import React, { useState } from "react";
 import { Form } from "./form";
 import { Role } from "@/types/role";
@@ -18,15 +23,12 @@ import axios, { AxiosError } from "axios";
 import { getSession } from "@/lib/session";
 import { useRouter } from "next/navigation";
 import { ErrorResponse } from "@/types/axios";
-import { FormLoket } from "./form-loket";
 import { Loket } from "@/types/loket";
-import { useLoketStore } from "@/store/userloket";
 
-type Props = { user: User };
+type Props = { loket: Loket };
 
-function Actions({ user }: Props) {
+function Actions({ loket }: Props) {
   const { roles } = useRoleStore();
-  const { loket } = useLoketStore();
   const Router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -41,17 +43,11 @@ function Actions({ user }: Props) {
     onClose: onDeleteClose,
   } = useDisclosure();
 
-  const {
-    isOpen: isLoketOpen,
-    onOpen: onLoketOpen,
-    onOpenChange: onLoketOpenChange,
-  } = useDisclosure();
-
   const deleteHandler = async () => {
     setIsLoading(true);
     const session = await getSession();
     axios
-      .delete("/api/administrator/user-akses?id=" + user.id, {
+      .delete("/api/administrator/master-loket?id=" + loket.id, {
         headers: {
           Authorization: `Bearer ${session?.token.value}`,
         },
@@ -78,13 +74,6 @@ function Actions({ user }: Props) {
         </DropdownTrigger>
         <DropdownMenu aria-label="Actions">
           <DropdownItem
-            key="tambah_loket"
-            startContent={<Plus className="w-4 h-4" />}
-            onPress={onLoketOpen}
-          >
-            Tambah Loket
-          </DropdownItem>
-          <DropdownItem
             key="edit"
             startContent={<Pencil className="w-4 h-4" />}
             onPress={onEditOpen}
@@ -92,7 +81,7 @@ function Actions({ user }: Props) {
             Edit
           </DropdownItem>
           <DropdownItem
-            key="hapus"
+            key="edit"
             startContent={<Trash className="w-4 h-4" />}
             onPress={onDeleteOpen}
             color="danger"
@@ -101,15 +90,9 @@ function Actions({ user }: Props) {
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <FormLoket
-        diclosure={{ isOpen: isLoketOpen, onOpenChange: onLoketOpenChange }}
-        loket={loket}
-        user={user}
-      />
       <Form
-        user={user}
+        data={loket}
         isEdit={true}
-        roles={roles}
         diclosure={{ isOpen: isEditOpen, onOpenChange: onEditOpenChange }}
       />
       <ModalDeleteRowTable

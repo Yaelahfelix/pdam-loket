@@ -8,18 +8,17 @@ import {
   NavbarItem,
 } from "@heroui/react";
 import React, { useCallback } from "react";
-import { DarkModeSwitch } from "./darkmodeswitch";
 import { useRouter } from "next/navigation";
 import { deleteAuthCookie } from "@/actions/auth.action";
 import { User } from "@/types/user";
-import { deleteSidebar } from "@/lib/settings";
+import { deleteSidebar } from "@/lib/sidebar";
 
 export const UserDropdown = ({ user }: { user: User }) => {
   const router = useRouter();
 
   const handleLogout = useCallback(async () => {
     await deleteAuthCookie();
-    deleteSidebar();
+    await deleteSidebar();
     router.replace("/login");
   }, [router]);
 
@@ -48,9 +47,6 @@ export const UserDropdown = ({ user }: { user: User }) => {
           onPress={handleLogout}
         >
           Log Out
-        </DropdownItem>
-        <DropdownItem key="switch">
-          <DarkModeSwitch />
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

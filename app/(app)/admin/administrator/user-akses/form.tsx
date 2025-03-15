@@ -1,9 +1,15 @@
 "use client";
 
+import { deleteAuthCookie } from "@/actions/auth.action";
 import { UserSchema } from "@/helpers/schemas";
 import { UserFormType } from "@/helpers/types";
 import { defaultErrorHandler } from "@/lib/dbQuery/defaultErrorHandler";
 import { getSession } from "@/lib/session";
+import { deleteSidebar } from "@/lib/sidebar";
+import {
+  errToast_INTERNALSERVER,
+  errToast_UNAUTHORIZED,
+} from "@/lib/toast/templatemsg/error";
 import { ErrorResponse } from "@/types/axios";
 import { Role } from "@/types/role";
 import { User } from "@/types/user";
@@ -46,6 +52,7 @@ export const Form = ({
   const Router = useRouter();
 
   const initialValues: UserFormType = {
+    id: user?.id,
     username: user?.username || "",
     password: user?.username ? "Tidak bisa diedit" : "",
     nama: user?.nama || "",
@@ -62,31 +69,35 @@ export const Form = ({
       { setFieldError }: FormikHelpers<UserFormType>,
       onClose: () => void
     ) => {
-      setIsLoading(true);
       const session = await getSession();
       const method = isEdit ? "put" : "post";
-      axios[method](
-        "/api/administrator/user-akses",
-        {
-          id: user?.id || null,
-          ...values,
+      axios[method]("/api/administrator/user-akses", values, {
+        headers: {
+          Authorization: `Bearer ${session?.token.value}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${session?.token.value}`,
-          },
-        }
-      )
+      })
         .then((res) => {
           addToast({ color: "success", title: res.data.message });
           onClose();
           Router.refresh();
         })
-        .catch((err: AxiosError<ErrorResponse>) => {
-          if (err.status !== 500 && err.status !== 401) {
+        .catch(async (err: AxiosError<ErrorResponse>) => {
+          if (err.status === 401) {
+            await deleteAuthCookie();
+            await deleteSidebar();
+            addToast({
+              title: "Gagal memperbarui data!",
+              ...errToast_UNAUTHORIZED,
+            });
+            return Router.replace("/login");
+          }
+          if (err.status !== 500) {
             return setFieldError("username", err.response?.data.message);
           }
-          defaultErrorHandler(err, false);
+          addToast({
+            title: "Gagal memperbarui data!",
+            ...errToast_INTERNALSERVER,
+          });
         })
         .finally(() => setIsLoading(false));
     },
@@ -104,7 +115,7 @@ export const Form = ({
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  {isEdit ? "Edit" : "Add"} User
+                  {isEdit ? "Edit" : "Add"} User {user?.id}
                 </ModalHeader>
                 <ModalBody>
                   <Formik
@@ -122,7 +133,6 @@ export const Form = ({
                       handleSubmit,
                       setFieldValue,
                     }) => {
-                      console.log(errors);
                       return (
                         <>
                           <div className="flex flex-col w-full gap-4 mb-4">
@@ -239,7 +249,7 @@ export const Form = ({
                               type="submit"
                               isLoading={isLoading}
                             >
-                              Add User
+                              {isEdit ? "Edit" : "Add"} User
                             </Button>
                           </div>
                         </>

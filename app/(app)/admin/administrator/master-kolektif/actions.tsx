@@ -6,7 +6,7 @@ import {
   DropdownTrigger,
   useDisclosure,
 } from "@heroui/react";
-import { EllipsisVertical, Pencil, Trash } from "lucide-react";
+import { EllipsisVertical, Pencil, Plus, Trash } from "lucide-react";
 import React, { useState } from "react";
 import { Form } from "./form";
 import ModalDeleteRowTable from "@/components/modal/deleteRowTable";
@@ -15,6 +15,7 @@ import { getSession } from "@/lib/session";
 import { useRouter } from "next/navigation";
 import { ErrorResponse } from "@/types/axios";
 import { Kolektif } from "@/types/kolektif";
+import { FormPelanggan } from "./form-pelanggan";
 
 type Props = { kolektif: Kolektif };
 
@@ -31,6 +32,11 @@ function Actions({ kolektif }: Props) {
     onOpen: onDeleteOpen,
     onOpenChange: onDeleteOpenChange,
     onClose: onDeleteClose,
+  } = useDisclosure();
+  const {
+    isOpen: isKolektifOpen,
+    onOpen: onKolektifOpen,
+    onOpenChange: onKolektifOpenChange,
   } = useDisclosure();
 
   const deleteHandler = async () => {
@@ -64,6 +70,13 @@ function Actions({ kolektif }: Props) {
         </DropdownTrigger>
         <DropdownMenu aria-label="Actions">
           <DropdownItem
+            key="add_pelanggan"
+            startContent={<Plus className="w-4 h-4" />}
+            onPress={onKolektifOpen}
+          >
+            Tambah Pelanggan
+          </DropdownItem>
+          <DropdownItem
             key="edit"
             startContent={<Pencil className="w-4 h-4" />}
             onPress={onEditOpen}
@@ -71,7 +84,7 @@ function Actions({ kolektif }: Props) {
             Edit
           </DropdownItem>
           <DropdownItem
-            key="edit"
+            key="hapus"
             startContent={<Trash className="w-4 h-4" />}
             onPress={onDeleteOpen}
             color="danger"
@@ -84,6 +97,13 @@ function Actions({ kolektif }: Props) {
         data={kolektif}
         isEdit={true}
         diclosure={{ isOpen: isEditOpen, onOpenChange: onEditOpenChange }}
+      />
+      <FormPelanggan
+        kolektif_id={kolektif.id}
+        diclosure={{
+          isOpen: isKolektifOpen,
+          onOpenChange: onKolektifOpenChange,
+        }}
       />
       <ModalDeleteRowTable
         isLoading={isLoading}

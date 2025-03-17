@@ -6,7 +6,6 @@ import {
 } from "@/lib/paginationServer";
 import { verifyAuth } from "@/lib/session";
 import { Kolektif } from "@/types/kolektif";
-import { User } from "@/types/user";
 import { RowDataPacket } from "mysql2";
 import { Pool } from "mysql2/promise";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,7 +15,7 @@ export const GET = async (request: NextRequest) => {
   const authResult = await verifyAuth(request);
 
   if (!authResult.isAuthenticated) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ message: authResult.error }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -34,14 +33,15 @@ export const GET = async (request: NextRequest) => {
           WHEN COUNT(p.id) = 0 THEN NULL 
           ELSE JSON_ARRAYAGG(
             JSON_OBJECT(
+              'id', p.id,
               'no_pelanggan', p.no_pelanggan,
+              'kolektif_id', k.id,
               'nama_pelanggan', p.nama
             )
           ) 
         END AS pelanggan_array
       FROM kolektif k
-      LEFT JOIN kolektif_pelanggan kp ON kp.kolektif_id = k.id
-      LEFT JOIN pelanggan p ON p.id = kp.pelanggan_id
+      LEFT JOIN pelanggan p ON p.kolektif_id = k.id
       `;
 
       let paramsArray: any[] = [];
@@ -65,53 +65,43 @@ export const GET = async (request: NextRequest) => {
     }
   );
 };
-
 export const POST = async (request: NextRequest) => {
   try {
     const db = await getConnection();
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
-    const { kodeloket, loket, aktif } = body;
+    const { no_kolektif, nama, telp } = body;
 
-    if (!kodeloket || !loket || aktif === undefined) {
+    if (!no_kolektif || !nama || !telp) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const checkLoketQuery = `SELECT COUNT(*) AS count FROM sipamit_billing.loket WHERE kodeloket = ?`;
-    const [loketCheck] = await db.query<RowDataPacket[]>(checkLoketQuery, [
-      kodeloket,
+    const checkQuery = `SELECT COUNT(*) AS count FROM kolektif WHERE no_kolektif = ?`;
+    const [checkResult] = await db.query<RowDataPacket[]>(checkQuery, [
+      no_kolektif,
     ]);
 
-    if (loketCheck[0].count > 0) {
+    if (checkResult[0].count > 0) {
       return NextResponse.json(
-        { error: "Kode loket sudah ada, silahkan coba yang lain!" },
+        { message: "No kolektif sudah ada, silakan coba yang lain!" },
         { status: 409 }
       );
     }
 
-    const insertQuery = `
-      INSERT INTO sipamit_billing.loket (kodeloket, loket, aktif)
-      VALUES (?, ?, ?)
-    `;
-
-    const [result] = await db.query<RowDataPacket[]>(insertQuery, [
-      kodeloket,
-      loket,
-      aktif,
-    ]);
+    const insertQuery = `INSERT INTO kolektif (no_kolektif, nama, telp, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())`;
+    await db.query(insertQuery, [no_kolektif, nama, telp]);
 
     return NextResponse.json({
       status: 200,
-      message: "Berhasil membuat loket",
-      result,
+      message: "Berhasil menambahkan kolektif",
     });
   } catch (error: any) {
     console.log(error);
@@ -131,40 +121,35 @@ export const PUT = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
-    const { id, kodeloket, loket, aktif } = body;
+    const { id, no_kolektif, nama, telp } = body;
 
-    if (!id || !kodeloket || !loket || aktif === undefined) {
+    if (!id || !no_kolektif || !nama || !telp) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const checkLoketQuery = `SELECT COUNT(*) AS count FROM sipamit_billing.loket WHERE id = ?`;
-    const [loketCheck] = await db.query<RowDataPacket[]>(checkLoketQuery, [id]);
+    const checkQuery = `SELECT COUNT(*) AS count FROM kolektif WHERE id = ?`;
+    const [checkResult] = await db.query<RowDataPacket[]>(checkQuery, [id]);
 
-    if (loketCheck[0].count === 0) {
+    if (checkResult[0].count === 0) {
       return NextResponse.json(
-        { error: "Loket tidak ditemukan" },
+        { message: "Kolektif tidak ditemukan" },
         { status: 404 }
       );
     }
 
-    const updateQuery = `
-      UPDATE sipamit_billing.loket 
-      SET kodeloket = ?, loket = ?, aktif = ?
-      WHERE id = ?
-    `;
-
-    await db.query(updateQuery, [kodeloket, loket, aktif, id]);
+    const updateQuery = `UPDATE kolektif SET no_kolektif = ?, nama = ?, telp = ?, updated_at = NOW() WHERE id = ?`;
+    await db.query(updateQuery, [no_kolektif, nama, telp, id]);
 
     return NextResponse.json({
       status: 200,
-      message: "Berhasil memperbarui loket",
+      message: "Berhasil memperbarui kolektif",
     });
   } catch (error: any) {
     console.log(error);
@@ -184,7 +169,7 @@ export const DELETE = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -192,27 +177,27 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }
 
-    const checkLoketQuery = `SELECT COUNT(*) AS count FROM sipamit_billing.loket WHERE id = ?`;
-    const [loketCheck] = await db.query<RowDataPacket[]>(checkLoketQuery, [id]);
+    const checkQuery = `SELECT COUNT(*) AS count FROM kolektif WHERE id = ?`;
+    const [checkResult] = await db.query<RowDataPacket[]>(checkQuery, [id]);
 
-    if (loketCheck[0].count === 0) {
+    if (checkResult[0].count === 0) {
       return NextResponse.json(
-        { error: "Loket tidak ditemukan" },
+        { message: "Kolektif tidak ditemukan" },
         { status: 404 }
       );
     }
 
-    const deleteQuery = `DELETE FROM sipamit_billing.loket WHERE id = ?`;
+    const deleteQuery = `DELETE FROM kolektif WHERE id = ?`;
     await db.query(deleteQuery, [id]);
 
     return NextResponse.json({
       status: 200,
-      message: "Berhasil menghapus loket",
+      message: "Berhasil menghapus kolektif",
     });
   } catch (error: any) {
     console.log(error);

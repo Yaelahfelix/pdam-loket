@@ -3,10 +3,12 @@ export interface Kolektif {
   no_kolektif: string;
   nama: string;
   telp: string;
-  pelanggan_array: Pelanggan[];
+  pelanggan_array: KolektifPelanggan[];
 }
 
-interface Pelanggan {
+export interface KolektifPelanggan {
+  id: number;
   no_pelanggan: string;
+  kolektif_id: number;
   nama_pelanggan: string;
 }

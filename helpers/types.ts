@@ -36,3 +36,8 @@ export interface KolektifFormType {
   nama: string;
   telp: string;
 }
+
+export interface KolektifPelangganFormType {
+  kolektif_id: number;
+  no_pelanggan: string;
+}

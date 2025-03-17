@@ -62,12 +62,8 @@ export const Form = ({
     );
     const noKolektif = res.data.data.nomor_kolektif;
     setNoKolektif(noKolektif);
+    return noKolektif;
   };
-  useEffect(() => {
-    if (!isEdit) {
-      getNoKolektif();
-    }
-  }, []);
 
   const handleSubmit = useCallback(
     async (
@@ -98,8 +94,8 @@ export const Form = ({
             });
             return Router.replace("/login");
           }
-          if (err.status !== 500) {
-            return setFieldError("username", err.response?.data.message);
+          if (err.status === 409) {
+            return setFieldError("no_kolektif", err.response?.data.message);
           }
 
           addToast({
@@ -145,7 +141,13 @@ export const Form = ({
                       handleSubmit,
                       setFieldValue,
                     }) => {
-                      console.log(errors);
+                      useEffect(() => {
+                        if (!isEdit) {
+                          getNoKolektif().then((no) =>
+                            setFieldValue("no_kolektif", no)
+                          );
+                        }
+                      }, []);
                       return (
                         <>
                           <div className="flex flex-col w-full gap-4 mb-4">
@@ -169,7 +171,8 @@ export const Form = ({
                                   onPress={async () => {
                                     try {
                                       setIsLoading(true);
-                                      await getNoKolektif();
+                                      const nokolektif = await getNoKolektif();
+                                      setFieldValue("no_kolektif", nokolektif);
                                       addToast({
                                         title:
                                           "Berhasil memperbarui nomor kolektif",

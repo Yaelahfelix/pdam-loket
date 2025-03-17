@@ -49,7 +49,7 @@ SELECT
         'kodeloket', l.kodeloket,
         'loket', l.loket,
         'user_id', u.id,
-        'aktif', ul.aktif
+        'aktif', ul.aktif,
         'is_loket_aktif', l.aktif
       )
     ) 

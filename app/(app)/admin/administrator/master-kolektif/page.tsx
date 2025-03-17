@@ -9,8 +9,9 @@ import { deleteAuthCookie } from "@/actions/auth.action";
 import { redirect } from "next/navigation";
 import TableFunction from "./tableFunction";
 import BreadcrumbsComponent from "./breadcrumbs";
-import { canTableDetail, tableDetail } from "./detailTableRow";
+import { canTableDetail } from "./detailTableRow";
 import { deleteSidebar } from "@/lib/sidebar";
+import DataTableClient from "./data-table";
 
 const getData = async (page: number, limit: number, query?: string) => {
   let redirectPath;
@@ -69,14 +70,7 @@ const UserAkses = async ({
       <h3 className="text-xl font-semibold">Master Kolektif</h3>
 
       <TableFunction limit={(params.limit as string) || "10"} />
-      <DataTable
-        columns={columns}
-        data={data.data}
-        pagination={data.pagination}
-        limitPage={(params.limit as string) || "10"}
-        renderRowAccordionContent={tableDetail}
-        canExpand={canTableDetail}
-      />
+      <DataTableClient columns={columns} data={data} params={params} />
     </div>
   );
 };

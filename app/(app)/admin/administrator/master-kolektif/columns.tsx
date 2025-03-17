@@ -8,11 +8,6 @@ import { Kolektif } from "@/types/kolektif";
 
 export const columns: ColumnDef<Kolektif>[] = [
   {
-    accessorKey: "no",
-    header: "No",
-    cell: ({ row }) => row.index + 1,
-  },
-  {
     accessorKey: "no_kolektif",
     header: "Nomor Kolektif",
   },

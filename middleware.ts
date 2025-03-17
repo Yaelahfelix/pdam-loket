@@ -27,6 +27,14 @@ export function middleware(request: NextRequest) {
     if (settings) {
       const decodedSettings = jwt.verify(settings, SECRET_KEY!) as JwtPayload;
       const sidebar: MenuGroup[] = decodedSettings as MenuGroup[];
+
+      // const allowedLinks = sidebar.flatMap((group) =>
+      //   group.menus.map((menu) => `/admin/${menu.link}`)
+      // );
+
+      // if (!allowedLinks.includes(pathname)) {
+      //   return NextResponse.redirect(new URL("/admin", request.url));
+      // }
     }
   }
 

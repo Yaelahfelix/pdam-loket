@@ -65,7 +65,7 @@ LEFT JOIN plot_tim_tagih ptt on ptt.user_id = u.id
       let conditions: string[] = [];
 
       if (query) {
-        baseQuery += ` WHERE (u.username LIKE ? OR u.nama LIKE ?) `;
+        conditions.push(`(u.username LIKE ? OR u.nama LIKE ?)`);
         paramsArray.push(`%${query}%`, `%${query}%`);
       }
 
@@ -87,9 +87,10 @@ LEFT JOIN plot_tim_tagih ptt on ptt.user_id = u.id
       if (conditions.length > 0) {
         baseQuery += ` WHERE ` + conditions.join(" AND ");
       }
+
       baseQuery += `
         GROUP BY u.id, u.username, u.nama, u.jabatan, r.role, u.is_user_ppob, u.is_active, u.is_user_timtagih
-      `;
+    `;
 
       return await getPaginatedData<UserRecord>(
         db,

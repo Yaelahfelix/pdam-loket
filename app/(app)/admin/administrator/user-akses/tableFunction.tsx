@@ -13,12 +13,12 @@ import React, { useEffect, useState } from "react";
 import { ExportIcon } from "@/components/icons/accounts/export-icon";
 import { AdjustmentsVerticalIcon } from "@heroicons/react/24/solid";
 import { Role } from "@/types/role";
-import useUpdateQuery from "@/components/hooks/useUpdateQuery";
 import { RotateCw } from "lucide-react";
 import { Form } from "./form";
 import { useRoleStore } from "@/store/role";
 import { Loket } from "@/types/loket";
 import { useLoketStore } from "@/store/userloket";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 function TableFunction({
   roles,
@@ -36,25 +36,53 @@ function TableFunction({
   limit: string;
 }) {
   const [query, setQuery] = useState("");
-
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const updateQuery = useUpdateQuery();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { setRoles } = useRoleStore();
   const { setLoket } = useLoketStore();
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const updateQuery = (params: { [key: string]: string | number | null }) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === null || value === undefined) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, String(value));
+      }
+    });
+
+    router.push(`${pathname}?${newParams.toString()}`);
+  };
+
   useEffect(() => {
-    if (query) {
-      updateQuery({ q: query });
-    } else {
-      updateQuery({ q: null });
-    }
+    const handler = setTimeout(() => {
+      if (query) {
+        updateQuery({ q: query });
+      } else {
+        updateQuery({ q: null });
+      }
+    }, 300);
+
+    return () => clearTimeout(handler);
   }, [query]);
 
   useEffect(() => {
     setRoles(roles);
     setLoket(loket);
+  }, [roles, loket, setRoles, setLoket]);
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("q");
+    if (urlQuery) {
+      setQuery(urlQuery);
+    }
   }, []);
+
   return (
     <div className="flex justify-between flex-wrap gap-4 items-center">
       <div className="flex items-center gap-3 flex-wrap md:flex-nowrap">

@@ -34,6 +34,8 @@ const getData = async (page: number, limit: number, query?: string) => {
     );
     return res.data;
   } catch (err) {
+    console.log(err);
+
     if (err instanceof AxiosError) {
       if (err.status === 401) {
         await deleteSidebar();

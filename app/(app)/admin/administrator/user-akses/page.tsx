@@ -58,6 +58,7 @@ const getData = async (
     return res.data;
   } catch (err) {
     if (err instanceof AxiosError) {
+      console.log(err);
       if (err.status === 401) {
         await deleteSidebar();
         await deleteAuthCookie();

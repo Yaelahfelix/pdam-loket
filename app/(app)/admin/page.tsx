@@ -1,8 +1,7 @@
-import type { NextPage } from "next";
-import { Content } from "@/components/home/content";
+import { redirect } from "next/navigation";
 
-const Home: NextPage = () => {
-  return <Content />;
+const Home = () => {
+  return redirect("/admin");
 };
 
 export default Home;

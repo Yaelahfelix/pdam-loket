@@ -38,10 +38,11 @@ declare module "@tanstack/react-table" {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  pagination: PaginationResultType;
+  pagination?: PaginationResultType;
   limitPage: string;
   renderRowAccordionContent?: (row: TData) => React.ReactNode;
   canExpand?: (row: TData) => boolean;
+  disabledPagination?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,9 +52,10 @@ export function DataTable<TData, TValue>({
   limitPage,
   renderRowAccordionContent,
   canExpand = () => false,
+  disabledPagination = false,
 }: DataTableProps<TData, TValue>) {
   const [currentPage, setCurrentPage] = useState<number>(
-    pagination.currentPage
+    pagination?.currentPage || 0
   );
   const [limit, setLimit] = useState(limitPage);
   const [hasMounted, sethasMounted] = useState(false);
@@ -95,8 +97,8 @@ export function DataTable<TData, TValue>({
   }, [currentPage, limit, router]);
 
   useEffect(() => {
-    setCurrentPage(pagination.currentPage);
-  }, [pagination.currentPage]);
+    setCurrentPage(pagination?.currentPage || 0);
+  }, [pagination?.currentPage]);
 
   const handleRowClick = (row: Row<TData>) => {
     if (canExpand(row.original)) {
@@ -180,32 +182,34 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex gap-5 justify-end items-center dark:bg-stone-900 bg-slate-100 rounded-b-lg py-3 px-5">
-        <Select
-          className="max-w-36"
-          label="Limit per page"
-          required
-          value={limit}
-          onChange={(val) => {
-            setLimit(val.target.value);
-            setCurrentPage(1);
-          }}
-          defaultSelectedKeys={[limit]}
-          disallowEmptySelection
-        >
-          <SelectItem key={"10"}>10</SelectItem>
-          <SelectItem key={"25"}>25</SelectItem>
-          <SelectItem key={"50"}>50</SelectItem>
-          <SelectItem key={"100"}>100</SelectItem>
-        </Select>
-        <Pagination
-          showControls
-          initialPage={1}
-          total={pagination.totalPages}
-          page={currentPage}
-          onChange={setCurrentPage}
-        />
-      </div>
+      {!disabledPagination && (
+        <div className="flex gap-5 justify-end items-center dark:bg-stone-900 bg-slate-100 rounded-b-lg py-3 px-5">
+          <Select
+            className="max-w-36"
+            label="Limit per page"
+            required
+            value={limit}
+            onChange={(val) => {
+              setLimit(val.target.value);
+              setCurrentPage(1);
+            }}
+            defaultSelectedKeys={[limit]}
+            disallowEmptySelection
+          >
+            <SelectItem key={"10"}>10</SelectItem>
+            <SelectItem key={"25"}>25</SelectItem>
+            <SelectItem key={"50"}>50</SelectItem>
+            <SelectItem key={"100"}>100</SelectItem>
+          </Select>
+          <Pagination
+            showControls
+            initialPage={1}
+            total={pagination?.totalPages || 0}
+            page={currentPage}
+            onChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

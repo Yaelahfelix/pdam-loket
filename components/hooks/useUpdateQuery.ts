@@ -17,7 +17,7 @@ const useUpdateQuery = () => {
       }
     });
 
-    router.replace(`?${params.toString()}`, { scroll: false });
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 };
 

@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState, useEffect } from "react";
-import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import axios, { Axios, AxiosError, AxiosResponse } from "axios";
 import { BASEURL } from "@/constant";
@@ -12,29 +10,8 @@ import DataTableClient from "./data-table";
 import useSWR from "swr";
 import { useSearchParams } from "next/navigation";
 import { ErrorResponse } from "@/types/axios";
-
-const fetcher = async (url: string) => {
-  try {
-    const session = await (await import("@/lib/session")).getSession();
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${session?.token.value}`,
-      },
-    });
-    return response.data;
-  } catch (error: AxiosError<ErrorResponse>) {
-    if (error.response?.status === 401) {
-      const { deleteSidebar } = await import("@/lib/sidebar");
-      const { deleteAuthCookie } = await import("@/actions/auth.action");
-      await deleteSidebar();
-      await deleteAuthCookie();
-      window.location.href = "/login";
-    } else {
-      window.location.href = "/error";
-    }
-    throw error;
-  }
-};
+import { Skeleton } from "@heroui/react";
+import fetcher from "@/lib/swr/fetcher";
 
 const UserAkses = () => {
   const searchParams = useSearchParams();
@@ -100,32 +77,16 @@ const UserAkses = () => {
     data: rolesData,
     error: rolesError,
     isLoading: rolesLoading,
-  } = useSWR(`${BASEURL}/api/administrator/role`, fetcher);
+  } = useSWR(`/api/administrator/role`, fetcher);
 
   const {
     data: loketData,
     error: loketError,
     isLoading: loketLoading,
-  } = useSWR(`${BASEURL}/api/administrator/user-akses/loket`, fetcher);
+  } = useSWR(`/api/administrator/user-akses/loket`, fetcher);
 
   const roles = rolesData?.roles || [];
   const loket = loketData?.data || [];
-
-  if (userLoading || rolesLoading || loketLoading) {
-    return (
-      <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
-        Loading...
-      </div>
-    );
-  }
-
-  if (userError || rolesError || loketError) {
-    return (
-      <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
-        Error loading data
-      </div>
-    );
-  }
 
   return (
     <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
@@ -142,11 +103,21 @@ const UserAkses = () => {
         }}
         limit={String(limit)}
       />
-      <DataTableClient
-        columns={columns}
-        data={userData}
-        params={Object.fromEntries(searchParams.entries())}
-      />
+      {userLoading || rolesLoading || loketLoading ? (
+        <div className="p-5 border rounded-lg">
+          <Skeleton className="h-56 w-full rounded-lg" />
+        </div>
+      ) : userError || rolesError || loketError ? (
+        <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
+          Error loading data
+        </div>
+      ) : (
+        <DataTableClient
+          columns={columns}
+          data={userData}
+          params={Object.fromEntries(searchParams.entries())}
+        />
+      )}
     </div>
   );
 };

@@ -1,10 +1,10 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, Dispatch, SetStateAction, useContext } from "react";
 
 interface SidebarContext {
   collapsed: boolean;
-  setCollapsed: () => void;
+  setCollapsed: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SidebarContext = createContext<SidebarContext>({

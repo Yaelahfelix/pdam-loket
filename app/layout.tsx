@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { fontSans } from "@/config/fonts";
 import clsx from "clsx";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: "Next.js",
@@ -15,8 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
+    <html lang="en">
       <body className={clsx("font-sans antialiased", fontSans.className)}>
+        <NextTopLoader />
         <Providers>{children}</Providers>
       </body>
     </html>

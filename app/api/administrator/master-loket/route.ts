@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
   const authResult = await verifyAuth(request);
 
   if (!authResult.isAuthenticated) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ message: authResult.error }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -60,7 +60,7 @@ export const POST = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -119,7 +119,7 @@ export const PUT = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -172,7 +172,7 @@ export const DELETE = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);

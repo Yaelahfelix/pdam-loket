@@ -8,7 +8,7 @@ export const GET = async (request: NextRequest) => {
   const authResult = await verifyAuth(request);
 
   if (!authResult.isAuthenticated) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ message: authResult.error }, { status: 401 });
   }
 
   const query = "SELECT noautokol();";

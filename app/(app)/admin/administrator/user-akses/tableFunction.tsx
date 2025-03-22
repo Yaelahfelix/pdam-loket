@@ -19,6 +19,7 @@ import { useRoleStore } from "@/store/role";
 import { Loket } from "@/types/loket";
 import { useLoketStore } from "@/store/userloket";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import useUpdateQuery from "@/components/hooks/useUpdateQuery";
 
 function TableFunction({
   roles,
@@ -40,24 +41,11 @@ function TableFunction({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { setRoles } = useRoleStore();
   const { setLoket } = useLoketStore();
+  const updateQuery = useUpdateQuery();
 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const updateQuery = (params: { [key: string]: string | number | null }) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-
-    Object.entries(params).forEach(([key, value]) => {
-      if (value === null || value === undefined) {
-        newParams.delete(key);
-      } else {
-        newParams.set(key, String(value));
-      }
-    });
-
-    router.push(`${pathname}?${newParams.toString()}`);
-  };
 
   useEffect(() => {
     const handler = setTimeout(() => {

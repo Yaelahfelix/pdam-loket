@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const [result] = await db.query<RowDataPacket[]>(GET_ALL_ROLE);

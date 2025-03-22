@@ -9,7 +9,7 @@ export const GET = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
     const query = "SELECT * FROM sipamit_billing.setup_ppn";
     const [data] = await db.query<RowDataPacket[]>(query);
@@ -30,11 +30,13 @@ export const POST = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
     const { jml, mulaitgl } = body;
+
+    console.log(body);
 
     if (jml === undefined || !mulaitgl) {
       return NextResponse.json(
@@ -69,7 +71,7 @@ export const PUT = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -108,7 +110,7 @@ export const DELETE = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);

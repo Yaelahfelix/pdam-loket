@@ -33,3 +33,32 @@ export const MasterKolektifSchema = yup.object().shape({
   nama: yup.string().max(50).required("Nama kolektif is required"),
   telp: yup.string().max(50).optional(),
 });
+
+export const DendaSchema = yup.object().shape({
+  idx: yup.number().required("Idx is required"),
+  tgl1: yup.number().required("Tanggal 1 is required"),
+  tgl2: yup.number().required("Tanggal 2 is required"),
+  flagpersen: yup.number().required("Flag Persen is required"),
+  denda1: yup
+    .number()
+    .required("Denda 1 is required")
+    .typeError("Denda 1 must be a number")
+    .min(0, "Denda 1 cannot be negative"),
+  denda2: yup
+    .number()
+    .required("Denda 2 is required")
+    .typeError("Denda 2 must be a number")
+    .min(0, "Denda 2 cannot be negative"),
+});
+
+export const DesktopSettingsSchema = yup.object().shape({
+  idx: yup.number().required("Index wajib diisi"),
+  mundurtglbyr: yup.number().required("Mundur tanggal bayar wajib diisi"),
+  headerlap1: yup.string().required("Header Laporan 1 wajib diisi"),
+  headerlap2: yup.string().required("Header Laporan 2 wajib diisi"),
+  alamat1: yup.string().required("Alamat 1 wajib diisi"),
+  alamat2: yup.string().required("Alamat 2 wajib diisi"),
+  footerkota: yup.string().required("Footer Kota wajib diisi"),
+  stricpayment: yup.boolean().required("Strict Payment wajib diisi"),
+  information: yup.string().required("Informasi wajib diisi"),
+});

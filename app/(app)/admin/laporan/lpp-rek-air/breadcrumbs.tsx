@@ -7,8 +7,8 @@ function BreadcrumbsComponent() {
   return (
     <Breadcrumbs>
       <BreadcrumbItem>Dashboard</BreadcrumbItem>
-      <BreadcrumbItem>Administrator</BreadcrumbItem>
-      <BreadcrumbItem>Role Users</BreadcrumbItem>
+      <BreadcrumbItem>Laporan</BreadcrumbItem>
+      <BreadcrumbItem>LPP Rek Air</BreadcrumbItem>
     </Breadcrumbs>
   );
 }

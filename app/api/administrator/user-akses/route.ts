@@ -135,7 +135,7 @@ export const POST = async (request: NextRequest) => {
       is_user_timtagih === undefined
     ) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -220,7 +220,7 @@ export const PUT = async (request: NextRequest) => {
       is_user_timtagih === undefined
     ) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -230,7 +230,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (userCheck[0].count === 0) {
       return NextResponse.json(
-        { error: "User tidak ditemukan" },
+        { message: "User tidak ditemukan" },
         { status: 404 }
       );
     }
@@ -281,7 +281,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }
@@ -291,7 +291,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (userCheck[0].count === 0) {
       return NextResponse.json(
-        { error: "User tidak ditemukan" },
+        { message: "User tidak ditemukan" },
         { status: 404 }
       );
     }

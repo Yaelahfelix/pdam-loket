@@ -40,7 +40,7 @@ export const POST = async (request: NextRequest) => {
 
     if (jml === undefined || !mulaitgl) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -79,7 +79,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (!id || jml === undefined || !mulaitgl) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -118,7 +118,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }

@@ -1,9 +1,16 @@
-interface MenuDetail {
+export interface MenuDetail {
+  group_name: string;
+  icon: string;
   menu_id: number;
   menu_name: string;
   link: string;
 }
 
+export interface SidebarIcon {
+  id: number;
+  namamenu: string;
+  icon: string;
+}
 export interface MenuGroup {
   group_name: string;
   menus: MenuDetail[];

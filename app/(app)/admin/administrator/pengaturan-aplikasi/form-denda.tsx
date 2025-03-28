@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteAuthCookie } from "@/actions/auth.action";
+import LocationInputForm from "@/components/form/Location";
 import { DendaSchema, UserSchema } from "@/helpers/schemas";
 import { UserFormType } from "@/helpers/types";
 import { defaultErrorHandler } from "@/lib/dbQuery/defaultErrorHandler";

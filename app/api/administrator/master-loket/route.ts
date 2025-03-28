@@ -68,7 +68,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!kodeloket || !loket || aktif === undefined) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -80,7 +80,7 @@ export const POST = async (request: NextRequest) => {
 
     if (loketCheck[0].count > 0) {
       return NextResponse.json(
-        { error: "Kode loket sudah ada, silahkan coba yang lain!" },
+        { message: "Kode loket sudah ada, silahkan coba yang lain!" },
         { status: 409 }
       );
     }
@@ -127,7 +127,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (!id || !kodeloket || !loket || aktif === undefined) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -137,7 +137,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (loketCheck[0].count === 0) {
       return NextResponse.json(
-        { error: "Loket tidak ditemukan" },
+        { message: "Loket tidak ditemukan" },
         { status: 404 }
       );
     }
@@ -180,7 +180,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }
@@ -190,7 +190,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (loketCheck[0].count === 0) {
       return NextResponse.json(
-        { error: "Loket tidak ditemukan" },
+        { message: "Loket tidak ditemukan" },
         { status: 404 }
       );
     }

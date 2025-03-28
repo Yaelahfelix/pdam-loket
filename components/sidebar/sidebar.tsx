@@ -6,6 +6,7 @@ import { useSidebarContext } from "../layout/layout-context";
 import { usePathname } from "next/navigation";
 
 import { MenuGroup } from "@/types/settings";
+import { icons } from "@/lib/icons";
 
 export const SidebarWrapper = ({
   sidebar,
@@ -45,6 +46,9 @@ export const SidebarWrapper = ({
               <SidebarMenu title={group.group_name} key={i}>
                 {group.menus.map((menu) => (
                   <SidebarItem
+                    icon={
+                      icons.find((icon) => icon.name === menu.icon)?.component
+                    }
                     key={menu.link}
                     isActive={pathname === `/admin/${menu.link}`}
                     title={menu.menu_name}

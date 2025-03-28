@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // ! Select menu utama dari aplikasi id
     const query = `
-    SELECT mu.namamenu as group_name, md.menu_id, md.namamenu as menu_name, mu.url as group_url, md.url as menu_url FROM menuutama mu 
+    SELECT mu.namamenu as group_name, md.menu_id, md.namamenu as menu_name, mu.url as group_url, md.url as menu_url, md.icon FROM menuutama mu 
 LEFT JOIN menudetail md ON mu.id = md.menu_id
 LEFT JOIN role_akses ra ON ra.menu_id = md.id
  WHERE mu.aplikasi_id = ? AND ra.role_id = ? ORDER BY mu.indek ASC, md.indek ASC;

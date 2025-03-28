@@ -21,14 +21,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@heroui/react";
+import { useSearchParams } from "next/navigation";
 
-export function ComboboxPelanggan({ setFieldValue }: { setFieldValue: any }) {
+export function ComboboxPelanggan({
+  handler,
+  placeHolder = "Pilih pelanggan...",
+}: {
+  handler: (value: string) => void;
+  placeHolder?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState("");
   const [pelangganList, setPelangganList] = useState<Pelanggan[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const searchParams = useSearchParams();
+  const valueFromQuery = searchParams.get("no-pelanggan");
   const fetchData = useCallback(async (searchQuery = "") => {
     try {
       setLoading(true);
@@ -55,8 +63,18 @@ export function ComboboxPelanggan({ setFieldValue }: { setFieldValue: any }) {
   }, [fetchData]);
 
   useEffect(() => {
-    const selectedPelanggan = getSelectedPelanggan();
-    setFieldValue("no_pelanggan", selectedPelanggan?.no_pelanggan);
+    const selected = pelangganList.find((p) => p.id.toString() === value);
+
+    if (!valueFromQuery && selected) {
+      setValue("");
+    }
+  }, [valueFromQuery]);
+
+  useEffect(() => {
+    if (value !== "") {
+      const selectedPelanggan = getSelectedPelanggan();
+      handler(selectedPelanggan?.no_pelanggan || "");
+    }
   }, [value]);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -72,7 +90,7 @@ export function ComboboxPelanggan({ setFieldValue }: { setFieldValue: any }) {
     const selected = pelangganList.find((p) => p.id.toString() === value);
     return selected
       ? `${selected.nama} (${selected.no_pelanggan})`
-      : "Pilih pelanggan...";
+      : placeHolder;
   };
 
   return (

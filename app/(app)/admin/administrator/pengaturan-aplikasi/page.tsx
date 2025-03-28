@@ -25,6 +25,7 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import BreadcrumbsComponent from "./breadcrumbs";
+import { id } from "date-fns/locale";
 import {
   DekstopSettings,
   Denda,
@@ -36,6 +37,9 @@ import { FormDekstop } from "./form-dekstop";
 import { EllipsisVertical, Pencil, Plus, Trash } from "lucide-react";
 import { FormPPN } from "./form-ppn";
 import PPNActions from "./ppn-actions";
+import { FormMaps } from "./form-maps";
+import { FormCoklit } from "./form-coklit";
+import { format } from "date-fns";
 
 const fetcher = async (url: string) => {
   const session = await (await import("@/lib/session")).getSession();
@@ -95,6 +99,13 @@ const UserAkses = () => {
     onOpen: onPPNOpen,
     onOpenChange: onPPNOpenChange,
   } = useDisclosure();
+
+  const {
+    isOpen: isCoklitOpen,
+    onOpen: onCoklitOpen,
+    onOpenChange: onCoklitOpenChange,
+  } = useDisclosure();
+
   // const {
   //   data: rolesData,
   //   error: rolesError,
@@ -121,7 +132,7 @@ const UserAkses = () => {
           Error loading data
         </div>
       ) : (
-        <div>
+        <div className="flex flex-col gap-5">
           <div className="flex gap-5">
             <Card className="w-4/12">
               <CardHeader className="justify-center">
@@ -144,7 +155,17 @@ const UserAkses = () => {
               </CardBody>
             </Card>
           </div>
-          <div>
+          <div className="flex flex-col gap-5">
+            <Card className="">
+              <CardHeader className="justify-center">
+                <h1 className="text-center">Setelan Default Maps</h1>
+              </CardHeader>
+              <CardBody className=" ">
+                <div className="w-full ">
+                  <FormMaps />
+                </div>
+              </CardBody>
+            </Card>
             <Card className="">
               <CardBody className="flex flex-row divide-x">
                 <div className="w-6/12 p-5 flex flex-col gap-5">
@@ -162,7 +183,13 @@ const UserAkses = () => {
                             <>
                               <TableRow key={i}>
                                 <TableCell>{data.jml}</TableCell>
-                                <TableCell>{data.mulaitgl}</TableCell>
+                                <TableCell>
+                                  {format(
+                                    new Date(data.mulaitgl),
+                                    "dd MMM yyyy",
+                                    { locale: id }
+                                  )}
+                                </TableCell>
                                 <TableCell>
                                   <PPNActions data={data} />
                                 </TableCell>
@@ -188,6 +215,12 @@ const UserAkses = () => {
                   />
                 </div>
                 <div className="w-6/12 p-5 flex flex-col gap-5">
+                  <FormCoklit
+                    diclosure={{
+                      isOpen: isCoklitOpen,
+                      onOpenChange: onCoklitOpenChange,
+                    }}
+                  />
                   <h1 className="text-center">Pelanggan Coklit</h1>
                   <Table>
                     <TableHeader>
@@ -207,6 +240,13 @@ const UserAkses = () => {
                       }
                     </TableBody>
                   </Table>
+                  <Button
+                    startContent={<Plus />}
+                    color="primary"
+                    onPress={onCoklitOpen}
+                  >
+                    Tambah Pelanggan Coklit
+                  </Button>
                 </div>
               </CardBody>
             </Card>

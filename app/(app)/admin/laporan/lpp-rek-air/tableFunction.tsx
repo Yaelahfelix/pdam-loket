@@ -8,25 +8,26 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Select,
+  SelectItem,
   useDisclosure,
 } from "@heroui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ExportIcon } from "@/components/icons/accounts/export-icon";
 import { AdjustmentsVerticalIcon } from "@heroicons/react/24/solid";
-import { Role } from "@/types/role";
-import { RotateCw } from "lucide-react";
-import { useRoleStore } from "@/store/role";
-import { Loket } from "@/types/loket";
-import { useLoketStore } from "@/store/userloket";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import useUpdateQuery from "@/components/hooks/useUpdateQuery";
 import { format } from "date-fns";
 import { BlobProvider } from "@react-pdf/renderer";
 import { useLPPRekAirStore } from "@/store/lppRekAir";
-import PDFPage from "./pdfPage";
 import Link from "next/link";
+import DRDTable from "./pdfPage";
+import { useReactToPrint } from "react-to-print";
+import { FilterData } from "./page";
+import { RotateCw } from "lucide-react";
+import { useFilterStore } from "./useFilterStore";
 
-function TableFunction({}: {}) {
+function TableFunction({ filter }: { filter: FilterData }) {
   const [query, setQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const updateQuery = useUpdateQuery();
@@ -35,6 +36,16 @@ function TableFunction({}: {}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const {
+    kasir,
+    loket,
+    golongan,
+    kecamatan,
+    setKasir,
+    setLoket,
+    setGolongan,
+    setKecamatan,
+  } = useFilterStore();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -77,7 +88,7 @@ function TableFunction({}: {}) {
       </div>
       <div className="flex flex-row gap-3.5 flex-wrap">
         <Popover
-          placement="bottom"
+          placement="left-start"
           showArrow={true}
           isOpen={isFilterOpen}
           onOpenChange={setIsFilterOpen}
@@ -92,28 +103,76 @@ function TableFunction({}: {}) {
           </PopoverTrigger>
           <PopoverContent>
             <div className="px-1 py-2">
-              <div className="text-small font-bold text-center"></div>
+              <div className="text-small font-bold text-center">Filter</div>
+              <div className="flex flex-col gap-3 my-3 flex-shrink-0">
+                <Select
+                  className="w-[200px]"
+                  label="Berdasarkan kasir"
+                  selectedKeys={new Set([kasir])}
+                  onChange={(e) => setKasir(e.target.value)}
+                >
+                  {filter.user.map((user) => (
+                    <SelectItem key={user.id.toString()}>
+                      {user.nama}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                <Select
+                  className="w-[200px]"
+                  label="Berdasarkan loket"
+                  selectedKeys={new Set([loket])}
+                  onChange={(e) => setLoket(e.target.value)}
+                >
+                  {filter.loket.map((loket) => (
+                    <SelectItem key={loket.id}>{loket.loket}</SelectItem>
+                  ))}
+                </Select>
+
+                <Select
+                  className="w-[200px]"
+                  label="Berdasarkan golongan"
+                  selectedKeys={new Set([golongan])}
+                  onChange={(e) => setGolongan(e.target.value)}
+                >
+                  {filter.golongan.map((gol) => (
+                    <SelectItem key={gol.id}>{gol.kode_golongan}</SelectItem>
+                  ))}
+                </Select>
+
+                <Select
+                  className="w-[200px]"
+                  label="Berdasarkan kecamatan"
+                  selectedKeys={new Set([kecamatan])}
+                  onChange={(e) => setKecamatan(e.target.value)}
+                >
+                  {filter.kecamatan.map((kec) => (
+                    <SelectItem key={kec.id}>{kec.nama}</SelectItem>
+                  ))}
+                </Select>
+                <Button
+                  variant="solid"
+                  color="primary"
+                  className="w-full"
+                  startContent={<RotateCw className="w-5 h-5" />}
+                  onPress={() => {
+                    updateQuery({
+                      kec: null,
+                      kasir: null,
+                      lok: null,
+                      gol: null,
+                    });
+                    setIsFilterOpen(false);
+                  }}
+                >
+                  Hapus semua filter
+                </Button>
+              </div>
             </div>
           </PopoverContent>
         </Popover>
 
-        <BlobProvider document={<PDFPage data={drd?.data} />}>
-          {({ url, loading, error }) => {
-            console.log(error);
-            return (
-              <Link href={url || ""} target="_blank">
-                <Button
-                  color="primary"
-                  startContent={<ExportIcon />}
-                  isLoading={loading}
-                  isDisabled={!drd}
-                >
-                  Export to PDF
-                </Button>
-              </Link>
-            );
-          }}
-        </BlobProvider>
+        <DRDTable data={drd?.data} total={drd?.total} />
       </div>
     </div>
   );

@@ -99,7 +99,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (!id || !user_id || !loket_id || aktif === undefined) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }

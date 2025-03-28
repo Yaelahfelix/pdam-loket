@@ -39,8 +39,20 @@ export const POST = async (request: NextRequest) => {
 
     if (!no_pelanggan) {
       return NextResponse.json(
-        { error: "Missing required field: no_pelanggan" },
+        { message: "Missing required field: no_pelanggan" },
         { status: 400 }
+      );
+    }
+    const checkQuery =
+      "SELECT COUNT(*) AS count FROM pel_coklit WHERE no_pelanggan = ?";
+    const [result] = await db.query<RowDataPacket[]>(checkQuery, [
+      no_pelanggan,
+    ]);
+
+    if (result.length > 0) {
+      return NextResponse.json(
+        { message: "No pelanggan sudah ada" },
+        { status: 409 }
       );
     }
 
@@ -77,7 +89,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (!id || !no_pelanggan) {
       return NextResponse.json(
-        { error: "Missing required fields: id, no_pelanggan" },
+        { message: "Missing required fields: id, no_pelanggan" },
         { status: 400 }
       );
     }
@@ -115,7 +127,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }

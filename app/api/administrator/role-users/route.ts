@@ -42,12 +42,11 @@ export const PUT = async (request: NextRequest) => {
 
     if (!role_id) {
       return NextResponse.json(
-        { error: "Field role_id diperlukan" },
+        { message: "Field role_id diperlukan" },
         { status: 400 }
       );
     }
 
-    // Jika menu_id undefined tapi ada id dan role_id, lakukan delete
     if (id && role_id && menu_id === undefined) {
       const deleteQuery = "DELETE FROM role_akses WHERE id = ?";
       await db.query(deleteQuery, [id]);
@@ -57,7 +56,6 @@ export const PUT = async (request: NextRequest) => {
       });
     }
 
-    // Jika ada role_id dan menu_id tanpa id, lakukan insert
     if (!id && role_id && menu_id !== undefined) {
       const insertQuery =
         "INSERT INTO role_akses (role_id, menu_id) VALUES (?, ?)";
@@ -68,7 +66,6 @@ export const PUT = async (request: NextRequest) => {
       });
     }
 
-    // Jika ada id, role_id, dan menu_id, lakukan update
     if (id && role_id && menu_id !== undefined) {
       const updateQuery =
         "UPDATE role_akses SET role_id = ?, menu_id = ? WHERE id = ?";
@@ -80,7 +77,7 @@ export const PUT = async (request: NextRequest) => {
     }
 
     return NextResponse.json(
-      { error: "Permintaan tidak valid" },
+      { message: "Permintaan tidak valid" },
       { status: 400 }
     );
   } catch (error: any) {

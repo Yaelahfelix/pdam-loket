@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { ErrorResponse } from "@/types/axios";
 import { Skeleton } from "@heroui/react";
 import fetcher from "@/lib/swr/fetcher";
+import TableFunction from "./tableFunction";
 
 const UserAkses = () => {
   const { data, error, isLoading } = useSWR(
@@ -22,6 +23,7 @@ const UserAkses = () => {
     <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
       <BreadcrumbsComponent />
       <h3 className="text-xl font-semibold">Role Users</h3>
+      <TableFunction />
       {isLoading ? (
         <div className="p-5 border rounded-lg">
           <Skeleton className="h-56 w-full rounded-lg" />

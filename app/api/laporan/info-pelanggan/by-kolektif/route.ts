@@ -40,14 +40,21 @@ export const GET = async (request: NextRequest) => {
       });
     }
 
-    // const totalBelumLunas = allBlmLunas.reduce(
-    //   (sum: any, item: any) => sum + Number(item.totalrek),
-    //   0
-    // );
+    const totalBelumLunas = allBlmLunas.reduce((sum, pelanggan) => {
+      const totalPelanggan = pelanggan.tagihanBlmLunas.reduce(
+        (subtotal, tagihan) => {
+          return subtotal + Number(tagihan.totalrek);
+        },
+        0
+      );
+      return sum + totalPelanggan;
+    }, 0);
 
+    console.log(totalBelumLunas);
     return NextResponse.json({
       status: 200,
       kolektifBlmLunas: allBlmLunas,
+      totalBlmLunas: formatRupiah(totalBelumLunas),
     });
   } catch (error: any) {
     console.log(error);

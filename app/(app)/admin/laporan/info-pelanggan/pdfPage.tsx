@@ -407,7 +407,7 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
               fontSize: "12px",
             }}
           >
-            Probolinggo, 27 Maret 2025
+            Probolinggo, 28 Maret 2025
           </div>
           <div className="flex justify-end">
             <Signature name="Admin" position="Kepala" />
@@ -455,12 +455,14 @@ const PDFPelanggan: React.FC<DRDTableProps> = (props) => {
         
 
    
- 
-                @page {
-          @top-center {
-            content: element(header);
-          }
-        }
+@page {
+  @top-center {
+    content: "Laporan Bulanan";
+  }
+  @bottom-center {
+    content: "Halaman " counter(page);
+  }
+} 
         
         table {
           page-break-inside: avoid;

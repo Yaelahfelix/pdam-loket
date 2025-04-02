@@ -17,6 +17,7 @@ import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { getSidebar, setSidebar } from "@/lib/sidebar";
 import { MenuGroup } from "@/types/settings";
+import Image from "next/image";
 
 interface Props {
   children: React.ReactNode;
@@ -95,13 +96,21 @@ export const Layout = ({ children }: Props) => {
             />
 
             <ResizablePanel className="min-h-screen">
-              <NavbarWrapper user={user}>{children}</NavbarWrapper>
+              <NavbarWrapper user={user} loket={user.kodeloket}>
+                {children}
+              </NavbarWrapper>
             </ResizablePanel>
           </ResizablePanelGroup>
         </SidebarContext.Provider>
       ) : (
-        <div className="w-full h-screen grid place-content-center">
-          <Spinner color="primary" size="lg"></Spinner>
+        <div className="w-full h-screen grid place-content-center gap-5">
+          <Image
+            src="/logo/loket.png"
+            width={70}
+            height={70}
+            alt=""
+            className="animate-pulse"
+          />
         </div>
       )}
     </>

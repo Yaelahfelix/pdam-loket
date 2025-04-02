@@ -15,9 +15,10 @@ import { Sidebar } from "lucide-react";
 interface Props {
   children: React.ReactNode;
   user: User;
+  loket: string;
 }
 
-export const NavbarWrapper = ({ children, user }: Props) => {
+export const NavbarWrapper = ({ children, user, loket }: Props) => {
   const { setCollapsed } = useContext(SidebarContext);
   return (
     <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden max-h-screen">
@@ -30,9 +31,19 @@ export const NavbarWrapper = ({ children, user }: Props) => {
       >
         <NavbarContent className="w-full">
           <div className="flex justify-between w-full items-center">
-            <Button onPress={() => setCollapsed((prev) => !prev)}>
-              <Sidebar />
-            </Button>
+            <div className="flex gap-5 items-center">
+              <Button
+                onPress={() => setCollapsed((prev) => !prev)}
+                variant="ghost"
+              >
+                <Sidebar />
+              </Button>
+
+              <p>
+                Loket saat ini -{"  "}
+                <span className="text-blue-500 font-bold">{loket}</span>
+              </p>
+            </div>
             <div className="flex items-center gap-3">
               <DarkMode />
               <UserDropdown user={user} />

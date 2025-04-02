@@ -11,7 +11,7 @@ const Signature: React.FC<SignatureProps> = ({ position, name }) => {
     <div
       className="w-full text-center mt-8"
       style={{
-        fontFamily: "Arial, sans-serif",
+        // fontFamily: "Arial, sans-serif",
         fontSize: "12px",
       }}
     >

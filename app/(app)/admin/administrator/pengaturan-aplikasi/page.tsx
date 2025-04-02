@@ -4,9 +4,10 @@ import React, { useState, useEffect } from "react";
 import axios, { Axios, AxiosError, AxiosResponse } from "axios";
 import { BASEURL } from "@/constant";
 import useSWR from "swr";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ErrorResponse } from "@/types/axios";
 import {
+  addToast,
   Button,
   Card,
   CardBody,
@@ -40,6 +41,8 @@ import PPNActions from "./ppn-actions";
 import { FormMaps } from "./form-maps";
 import { FormCoklit } from "./form-coklit";
 import { format } from "date-fns";
+import ModalDeleteRowTable from "@/components/modal/deleteRowTable";
+import { getSession } from "@/lib/session";
 
 const fetcher = async (url: string) => {
   const session = await (await import("@/lib/session")).getSession();
@@ -79,6 +82,7 @@ const UserAkses = () => {
     isLoading: dekstopLoading,
   } = useSWR<{ data: DekstopSettings }>("/api/settings/dekstop", fetcher);
 
+  const Router = useRouter();
   const {
     data: ppnData,
     error: ppnError,
@@ -94,6 +98,8 @@ const UserAkses = () => {
     fetcher
   );
 
+  const [isLoading, setisLoading] = useState(false);
+  const [coklitDelId, setcoklitDelId] = useState<number | null>(null);
   const {
     isOpen: isPPNOpen,
     onOpen: onPPNOpen,
@@ -104,6 +110,13 @@ const UserAkses = () => {
     isOpen: isCoklitOpen,
     onOpen: onCoklitOpen,
     onOpenChange: onCoklitOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isCoklitDeleteOpen,
+    onOpen: onCoklitDeleteOpen,
+    onOpenChange: onCoklitDeleteOpenChange,
+    onClose: onCoklitDeleteClose,
   } = useDisclosure();
 
   // const {
@@ -226,6 +239,7 @@ const UserAkses = () => {
                     <TableHeader>
                       <TableColumn>No</TableColumn>
                       <TableColumn>No Pelanggan</TableColumn>
+                      <TableColumn>Actions</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {
@@ -234,12 +248,54 @@ const UserAkses = () => {
                             <TableRow key={i}>
                               <TableCell>{i + 1}</TableCell>
                               <TableCell>{data.no_pelanggan}</TableCell>
+                              <TableCell className="text-center justify-center">
+                                <Trash
+                                  onClick={() => {
+                                    setcoklitDelId(data.id);
+                                    onCoklitDeleteOpen();
+                                  }}
+                                  className="text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                                />
+                              </TableCell>
                             </TableRow>
                           );
                         }) as any
                       }
                     </TableBody>
                   </Table>
+                  <ModalDeleteRowTable
+                    diclosure={{
+                      isOpen: isCoklitDeleteOpen,
+                      onOpenChange: onCoklitDeleteOpenChange,
+                    }}
+                    isLoading={isLoading}
+                    onDelete={async () => {
+                      setisLoading(true);
+                      const session = await getSession();
+                      axios
+                        .delete("/api/settings/pel-coklit?id=" + coklitDelId, {
+                          headers: {
+                            Authorization: `Bearer ${session?.token.value}`,
+                          },
+                        })
+                        .then((res) => {
+                          addToast({
+                            color: "success",
+                            title: res.data.message,
+                          });
+                          onCoklitDeleteClose();
+                          Router.refresh();
+                        })
+                        .catch((err: AxiosError<ErrorResponse>) => {
+                          addToast({
+                            title: "Gagal menghapus data!",
+                            description: err.response?.data.message,
+                            color: "danger",
+                          });
+                        })
+                        .finally(() => setisLoading(false));
+                    }}
+                  />
                   <Button
                     startContent={<Plus />}
                     color="primary"

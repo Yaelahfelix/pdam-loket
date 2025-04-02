@@ -72,7 +72,6 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                 colSpan={2}
                 style={{
                   padding: "10px",
-                  backgroundColor: "red",
                   textAlign: "left",
                   verticalAlign: "middle",
                 }}
@@ -111,7 +110,7 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                 </div>
               </th>
             </tr>
-            {/* <tr>
+            <tr>
               <th
                 colSpan={10}
                 style={{
@@ -119,10 +118,9 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                   fontSize: "12px",
                 }}
               >
-                <div>Laporan tagihan</div>
-                <div>PDAM</div>
+                <div>Laporan Tagihan Air</div>
               </th>
-            </tr> */}
+            </tr>
 
             <tr style={{ backgroundColor: "#f0f0f0" }}>
               <th
@@ -407,7 +405,7 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
               fontSize: "12px",
             }}
           >
-            Probolinggo, 27 Maret 2025
+            Probolinggo, 28 Maret 2025
           </div>
           <div className="flex justify-between">
             <Signature

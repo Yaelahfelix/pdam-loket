@@ -7,9 +7,14 @@ import {
 import { create } from "zustand";
 
 interface InfoPel {
-  tagihanBlmLunas: TagihanBlmLunasInfoPel[];
-  tagihanSdhLunas: TagihanSdhLunasInfoPel[];
-  total: TotalTagihan;
+  tagihanBlmLunas?: TagihanBlmLunasInfoPel[];
+  tagihanSdhLunas?: TagihanSdhLunasInfoPel[];
+  totalBlmLunas?: string;
+  kolektifBlmLunas?: {
+    tagihanBlmLunas: TagihanBlmLunasInfoPel[];
+    total: string;
+  }[];
+  total?: TotalTagihan;
 }
 type Store = {
   data?: InfoPel;

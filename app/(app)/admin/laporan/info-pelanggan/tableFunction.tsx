@@ -24,6 +24,9 @@ import { ComboboxPelanggan } from "@/components/combobox/pelanggan";
 import { ComboboxKolektif } from "@/components/combobox/kolektif";
 import PDFPelanggan from "./pdfPage";
 import { useInfoPelStore } from "@/store/infopel";
+import PDFKolektif from "./pdfPageKolektif";
+import fetcher from "@/lib/swr/fetcher";
+import { DekstopSettings } from "@/types/settings";
 
 function TableFunction({}: {}) {
   const [query, setQuery] = useState("");
@@ -31,9 +34,12 @@ function TableFunction({}: {}) {
   const updateQuery = useUpdateQuery();
   const { data } = useInfoPelStore();
 
+  const searchParams = useSearchParams();
+  const noPelanggan = searchParams.get("no-pelanggan");
+  const noKolektif = searchParams.get("kolektif_id");
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [dekstop, setDekstop] = useState<DekstopSettings>();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -48,11 +54,16 @@ function TableFunction({}: {}) {
   }, [query]);
 
   useEffect(() => {
+    fetcher("/api/settings/dekstop").then((res) => {
+      setDekstop(res.data);
+    });
     const urlQuery = searchParams.get("q");
     if (urlQuery) {
       setQuery(urlQuery);
     }
   }, []);
+
+  console.log(dekstop);
 
   return (
     <div className="flex justify-between flex-wrap gap-4 items-center">
@@ -77,7 +88,7 @@ function TableFunction({}: {}) {
         />
       </div>
       <div className="flex flex-row gap-3.5 flex-wrap">
-        <Popover
+        {/* <Popover
           placement="bottom"
           showArrow={true}
           isOpen={isFilterOpen}
@@ -96,9 +107,22 @@ function TableFunction({}: {}) {
               <div className="text-small font-bold text-center"></div>
             </div>
           </PopoverContent>
-        </Popover>
+        </Popover> */}
 
-        <PDFPelanggan data={data?.tagihanBlmLunas} total={data?.total} />
+        {noPelanggan ? (
+          <PDFPelanggan data={data?.tagihanBlmLunas} total={data?.total} />
+        ) : noKolektif ? (
+          <PDFKolektif
+            data={data?.kolektifBlmLunas}
+            total={data?.totalBlmLunas}
+            headerlap1={dekstop?.headerlap1}
+            headerlap2={dekstop?.headerlap2}
+            alamat1={dekstop?.alamat1}
+            alamat2={dekstop?.alamat2}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

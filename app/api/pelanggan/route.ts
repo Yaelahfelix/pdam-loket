@@ -34,7 +34,6 @@ export const GET = async (request: NextRequest) => {
       [`%${searchQuery}%`, `%${searchQuery}%`]
     );
 
-    // Transform data sesuai dengan tipe yang dibutuhkan
     const formattedData = pelanggan.map((row) => ({
       id: row.id,
       nama: row.nama,

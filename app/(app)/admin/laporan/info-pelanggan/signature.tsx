@@ -3,19 +3,27 @@ import React from "react";
 type SignatureProps = {
   position?: string;
   name?: string;
-  showDate?: boolean;
+  description?: string;
 };
 
-const Signature: React.FC<SignatureProps> = ({ position, name }) => {
+const Signature: React.FC<SignatureProps> = ({
+  position,
+  name,
+  description,
+}) => {
   return (
     <div
-      className="w-full text-center mt-8"
+      className="text-center "
       style={{
         // fontFamily: "Arial, sans-serif",
         fontSize: "12px",
+        pageBreakInside: "avoid",
+        breakInside: "avoid",
+        breakAfter: "auto",
+        breakBefore: "auto",
       }}
     >
-      <div className="mb-2">Mengetahui</div>
+      <div className="mb-2">{description}</div>
       <div className="mb-4">{position}</div>
 
       <div

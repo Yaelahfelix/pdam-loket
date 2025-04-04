@@ -27,6 +27,7 @@ import { useInfoPelStore } from "@/store/infopel";
 import PDFKolektif from "./pdfPageKolektif";
 import fetcher from "@/lib/swr/fetcher";
 import { DekstopSettings } from "@/types/settings";
+import { TTD } from "@/types/ttd";
 
 function TableFunction({}: {}) {
   const [query, setQuery] = useState("");
@@ -40,6 +41,8 @@ function TableFunction({}: {}) {
   const router = useRouter();
   const pathname = usePathname();
   const [dekstop, setDekstop] = useState<DekstopSettings>();
+
+  const [signatureData, setSignatureData] = useState<TTD>();
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -56,6 +59,10 @@ function TableFunction({}: {}) {
   useEffect(() => {
     fetcher("/api/settings/dekstop").then((res) => {
       setDekstop(res.data);
+    });
+    fetcher("/api/ttd/info").then((res) => {
+      console.log(res);
+      setSignatureData(res.data);
     });
     const urlQuery = searchParams.get("q");
     if (urlQuery) {
@@ -119,6 +126,7 @@ function TableFunction({}: {}) {
             headerlap2={dekstop?.headerlap2}
             alamat1={dekstop?.alamat1}
             alamat2={dekstop?.alamat2}
+            signatureData={signatureData}
           />
         ) : (
           <></>

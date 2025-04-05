@@ -29,6 +29,10 @@ export interface TagihanBlmLunasInfoPel {
   totalrek: string;
 }
 
+export interface DataKolektif {
+  no_kolektif: string;
+  nama: string;
+}
 export interface TagihanSdhLunasInfoPel {
   id: number;
   no_pelanggan: string;

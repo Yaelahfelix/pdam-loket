@@ -17,13 +17,18 @@ export const GET = async (request: NextRequest) => {
     const kolektif_id = searchParams.get("kolektif_id");
     if (!kolektif_id) {
       return NextResponse.json(
-        { status: 400, message: "no pelanggan is required" },
+        { status: 400, message: "kolektif id is required" },
         { status: 400 }
       );
     }
 
     const [noPelBlmLunas] = await db.query<RowDataPacket[]>(
       "SELECT no_pelanggan FROM pelanggan WHERE kolektif_id = ?;",
+      [kolektif_id]
+    );
+
+    const [kolektif] = await db.query<RowDataPacket[]>(
+      "SELECT no_kolektif, nama FROM sipamit_billing.kolektif WHERE id = ?; ",
       [kolektif_id]
     );
 
@@ -53,6 +58,7 @@ export const GET = async (request: NextRequest) => {
     console.log(totalBelumLunas);
     return NextResponse.json({
       status: 200,
+      dataKolektif: kolektif[0],
       kolektifBlmLunas: allBlmLunas,
       totalBlmLunas: formatRupiah(totalBelumLunas),
     });

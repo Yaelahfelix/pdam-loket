@@ -16,7 +16,7 @@ import useSWR from "swr";
 import fetcher from "@/lib/swr/fetcher";
 import { Skeleton } from "@heroui/react";
 
-const LoketAkses = async ({}: {}) => {
+const LoketAkses = ({}: {}) => {
   const searchParams = useSearchParams();
 
   const page = searchParams.get("page")
@@ -35,16 +35,18 @@ const LoketAkses = async ({}: {}) => {
     if (query) {
       params.append("q", query);
     }
-    return `${BASEURL}/api/administrator/user-akses?${params.toString()}`;
+    return `${BASEURL}/api/administrator/master-loket?${params.toString()}`;
   };
 
   const { data, error, isLoading } = useSWR(buildUserAccessUrl(), fetcher);
+  console.log(data);
   return (
     <div className="my-10 px-4 lg:px-6 max-w-[95rem] mx-auto w-full flex flex-col gap-4">
       <BreadcrumbsComponent />
 
       <h3 className="text-xl font-semibold">Master Loket</h3>
 
+      <TableFunction limit={(String(limit) as string) || "10"} />
       {isLoading ? (
         <div className="p-5 border rounded-lg">
           <Skeleton className="h-56 w-full rounded-lg" />
@@ -55,7 +57,6 @@ const LoketAkses = async ({}: {}) => {
         </div>
       ) : (
         <>
-          <TableFunction limit={(String(limit) as string) || "10"} />
           <DataTable
             columns={columns}
             data={data.data}

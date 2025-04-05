@@ -62,3 +62,10 @@ export const DesktopSettingsSchema = yup.object().shape({
   stricpayment: yup.boolean().required("Strict Payment wajib diisi"),
   information: yup.string().required("Informasi wajib diisi"),
 });
+
+export const TTDSchema = yup.object().shape({
+  header1: yup.string().max(50).required("Deskripsi is required"),
+  header2: yup.string().max(50).required("Deskripsi is required"),
+  header3: yup.string().max(50).required("Deskripsi is required"),
+  header4: yup.string().max(50).required("Deskripsi is required"),
+});

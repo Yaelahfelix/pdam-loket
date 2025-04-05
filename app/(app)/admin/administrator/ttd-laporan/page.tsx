@@ -48,8 +48,12 @@ const UserAkses = () => {
           Error loading data
         </div>
       ) : (
-        <div>
-          <FormTTD data={data!.data[0]} />
+        <div className="flex  gap-5 justify-center flex-wrap flex-row w-full ">
+          {data!.data.map((data) => (
+            <div className="w-[45%]">
+              <FormTTD data={data} />
+            </div>
+          ))}
         </div>
         // <DataTableClient
         //   columns={columns}

@@ -17,22 +17,23 @@ import useUpdateQuery from "@/components/hooks/useUpdateQuery";
 import { RotateCw } from "lucide-react";
 import { Form } from "./form";
 import { useRoleStore } from "@/store/role";
+import { useDebounce } from "use-debounce";
 
 function TableFunction({ limit }: { limit: string }) {
   const [query, setQuery] = useState("");
-
+  const [qDebounce] = useDebounce(query, 300);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const updateQuery = useUpdateQuery();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { setRoles } = useRoleStore();
 
   useEffect(() => {
-    if (query) {
-      updateQuery({ q: query });
+    if (qDebounce) {
+      updateQuery({ q: qDebounce });
     } else {
       updateQuery({ q: null });
     }
-  }, [query]);
+  }, [qDebounce]);
 
   return (
     <div className="flex justify-between flex-wrap gap-4 items-center">

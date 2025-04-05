@@ -1,5 +1,6 @@
 import { DRD, TotalDRD } from "@/types/drd";
 import {
+  DataKolektif,
   TagihanBlmLunasInfoPel,
   TagihanSdhLunasInfoPel,
   TotalTagihan,
@@ -10,6 +11,7 @@ interface InfoPel {
   tagihanBlmLunas?: TagihanBlmLunasInfoPel[];
   tagihanSdhLunas?: TagihanSdhLunasInfoPel[];
   totalBlmLunas?: string;
+  dataKolektif?: DataKolektif;
   kolektifBlmLunas?: {
     tagihanBlmLunas: TagihanBlmLunasInfoPel[];
     total: string;

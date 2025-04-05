@@ -20,6 +20,7 @@ import { Loket } from "@/types/loket";
 import { useLoketStore } from "@/store/userloket";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import useUpdateQuery from "@/components/hooks/useUpdateQuery";
+import { useDebounce } from "use-debounce";
 
 function TableFunction({
   roles,
@@ -37,6 +38,7 @@ function TableFunction({
   limit: string;
 }) {
   const [query, setQuery] = useState("");
+  const [qDebounce] = useDebounce(query, 300);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { setRoles } = useRoleStore();
@@ -48,16 +50,12 @@ function TableFunction({
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (query) {
-        updateQuery({ q: query });
-      } else {
-        updateQuery({ q: null });
-      }
-    }, 300);
-
-    return () => clearTimeout(handler);
-  }, [query]);
+    if (qDebounce) {
+      updateQuery({ q: qDebounce });
+    } else {
+      updateQuery({ q: null });
+    }
+  }, [qDebounce]);
 
   useEffect(() => {
     setRoles(roles);

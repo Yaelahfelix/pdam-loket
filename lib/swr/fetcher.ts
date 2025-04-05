@@ -1,8 +1,9 @@
 import { ErrorResponse } from "@/types/axios";
 import axios, { AxiosError } from "axios";
+import { getSession } from "../session";
 
 const fetcher = async (url: string) => {
-  const session = await (await import("@/lib/session")).getSession();
+  const session = await getSession();
   return axios
     .get(url, {
       headers: {

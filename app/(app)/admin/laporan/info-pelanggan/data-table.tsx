@@ -24,6 +24,7 @@ import {
 } from "@heroui/react";
 import { DRD, TotalDRD } from "@/types/drd";
 import {
+  DataKolektif,
   TagihanBlmLunasInfoPel,
   TagihanSdhLunasInfoPel,
   TotalTagihan,
@@ -64,6 +65,7 @@ const DataTableClient = () => {
       tagihanBlmLunas: TagihanBlmLunasInfoPel[];
       total: string;
     }[];
+    dataKolektif: DataKolektif;
     totalBlmLunas: string;
   }>(
     noKolektif
@@ -85,11 +87,10 @@ const DataTableClient = () => {
       setData({
         kolektifBlmLunas: kolektifData.kolektifBlmLunas,
         totalBlmLunas: kolektifData.totalBlmLunas,
+        dataKolektif: kolektifData.dataKolektif,
       });
     }
   }, [pelangganData, kolektifData]);
-
-  console.log(kolektifData);
 
   return (
     <>

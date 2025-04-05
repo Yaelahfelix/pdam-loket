@@ -35,6 +35,7 @@ function TableFunction({}: {}) {
   const updateQuery = useUpdateQuery();
   const { data } = useInfoPelStore();
 
+  console.log(data);
   const searchParams = useSearchParams();
   const noPelanggan = searchParams.get("no-pelanggan");
   const noKolektif = searchParams.get("kolektif_id");
@@ -69,8 +70,6 @@ function TableFunction({}: {}) {
       setQuery(urlQuery);
     }
   }, []);
-
-  console.log(dekstop);
 
   return (
     <div className="flex justify-between flex-wrap gap-4 items-center">
@@ -117,11 +116,21 @@ function TableFunction({}: {}) {
         </Popover> */}
 
         {noPelanggan ? (
-          <PDFPelanggan data={data?.tagihanBlmLunas} total={data?.total} />
+          <PDFPelanggan
+            data={data?.tagihanBlmLunas}
+            total={data?.total}
+            dataKolektif={data?.dataKolektif}
+            headerlap1={dekstop?.headerlap1}
+            headerlap2={dekstop?.headerlap2}
+            alamat1={dekstop?.alamat1}
+            alamat2={dekstop?.alamat2}
+            signatureData={signatureData}
+          />
         ) : noKolektif ? (
           <PDFKolektif
             data={data?.kolektifBlmLunas}
             total={data?.totalBlmLunas}
+            dataKolektif={data?.dataKolektif}
             headerlap1={dekstop?.headerlap1}
             headerlap2={dekstop?.headerlap2}
             alamat1={dekstop?.alamat1}

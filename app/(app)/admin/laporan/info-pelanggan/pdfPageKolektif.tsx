@@ -5,7 +5,11 @@ import React, { Ref, useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import Signature from "./signature";
 import { Printer } from "lucide-react";
-import { TagihanBlmLunasInfoPel, TotalTagihan } from "@/types/info-pelanggan";
+import {
+  DataKolektif,
+  TagihanBlmLunasInfoPel,
+  TotalTagihan,
+} from "@/types/info-pelanggan";
 import { formatRupiah } from "@/lib/utils";
 import fetcher from "@/lib/swr/fetcher";
 import { TTD } from "@/types/ttd";
@@ -20,11 +24,12 @@ type DRDTableProps = {
   title?: string;
   total?: string;
   subtitle?: string;
-  headerlap1: string;
-  headerlap2: string;
-  alamat1: string;
-  alamat2: string;
-  signatureData: TTD;
+  headerlap1?: string;
+  dataKolektif?: DataKolektif;
+  headerlap2?: string;
+  alamat1?: string;
+  alamat2?: string;
+  signatureData?: TTD;
 };
 
 // Component to be printed
@@ -39,39 +44,16 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
       alamat2,
       title = "LAPORAN TAGIHAN",
       signatureData,
+      dataKolektif,
     },
     ref
   ) => {
-    console.log(total);
     return (
       <div
         ref={ref}
         className="print-container"
         style={{ backgroundColor: "#ffffff" }}
       >
-        {/* Document Header */}
-        {/* <div className="page-header" style={{ marginBottom: "20px" }}>
-          <h1
-            style={{
-              fontSize: "16px",
-              marginBottom: "20px",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-          >
-            {subtitle}
-          </h1>
-          <h2
-            style={{
-              fontSize: "14px",
-              marginBottom: "15px",
-              textAlign: "center",
-            }}
-          >
-            {title}
-          </h2>
-        </div> */}
-
         <div className="header w-full">
           <div className="w-full ">
             <div
@@ -147,6 +129,14 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                       display: "table-header-group",
                     }}
                   >
+                    <tr>
+                      <td colSpan={9}>
+                        <p className="text-[12px]">
+                          Kolektif {dataKolektif?.no_kolektif} |{" "}
+                          {dataKolektif?.nama}
+                        </p>
+                      </td>
+                    </tr>
                     <tr style={{ backgroundColor: "#f0f0f0" }}>
                       <th
                         style={{
@@ -249,94 +239,96 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                   <tbody>
                     {data?.map((pelanggan, i) =>
                       pelanggan.tagihanBlmLunas.map((tagihan, j) => (
-                        <tr key={`${i}-${j}`}>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {i + 1}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {tagihan.no_pelanggan}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {tagihan.nama}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                            }}
-                          >
-                            A
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                            }}
-                          >
-                            {tagihan.periode_rek}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                              textAlign: "right",
-                            }}
-                          >
-                            {tagihan.pakaiskrg}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                              textAlign: "right",
-                            }}
-                          >
-                            {formatRupiah(tagihan.rekair)}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                              textAlign: "right",
-                            }}
-                          >
-                            {formatRupiah(Number(tagihan.denda1))}
-                          </td>
+                        <>
+                          <tr key={`${i}-${j}`}>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {i + 1}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {tagihan.no_pelanggan}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {tagihan.nama}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              A
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {tagihan.periode_rek}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                                textAlign: "right",
+                              }}
+                            >
+                              {tagihan.pakaiskrg}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                                textAlign: "right",
+                              }}
+                            >
+                              {formatRupiah(tagihan.rekair)}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                                textAlign: "right",
+                              }}
+                            >
+                              {formatRupiah(Number(tagihan.denda1))}
+                            </td>
 
-                          <td
-                            style={{
-                              border: "1px solid #000",
-                              padding: "5px",
-                              fontSize: "12px",
-                              textAlign: "right",
-                            }}
-                          >
-                            {formatRupiah(Number(tagihan.totalrek))}
-                          </td>
-                        </tr>
+                            <td
+                              style={{
+                                border: "1px solid #000",
+                                padding: "5px",
+                                fontSize: "12px",
+                                textAlign: "right",
+                              }}
+                            >
+                              {formatRupiah(Number(tagihan.totalrek))}
+                            </td>
+                          </tr>
+                        </>
                       ))
                     )}
 
@@ -366,6 +358,8 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                     </tr>
                   </tbody>
                 </table>
+
+                {/* ttd */}
                 <div className="signature mt-5">
                   <div
                     className=" flex justify-between items-end"
@@ -456,11 +450,12 @@ const PDFKolektif: React.FC<DRDTableProps> = (props) => {
     
     @media print {
       @page { 
-        size: landscape; margin: 30px;
+        size: A4; margin: 30px;
       }
    
         body { 
           -webkit-print-color-adjust: exact; 
+              counter-reset: page;
         }
 
          thead {
@@ -519,10 +514,20 @@ const PDFKolektif: React.FC<DRDTableProps> = (props) => {
           -webkit-print-color-adjust: exact; 
         }
 
+    .page-number::after {
+    counter-increment: page;
+    content: "Halaman " counter(page);
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 12px;
+  }
+
       }
     `,
   });
 
+  console.log(props);
   return (
     <div>
       <div ref={componentRef} className="hidden-print">

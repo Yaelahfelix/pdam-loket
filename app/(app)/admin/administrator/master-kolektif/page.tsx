@@ -27,7 +27,7 @@ const getData = async (page: number, limit: number, query?: string) => {
   try {
     const session = await getSession();
     const res = await axios.get(
-      BASEURL + `/api/administrator/master-kolektif?${params.toString()}`,
+      `${BASEURL}/api/administrator/master-kolektif?${params.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${session?.token.value}`,

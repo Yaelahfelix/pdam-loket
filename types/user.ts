@@ -6,9 +6,12 @@ export interface User {
   kodeloket: string;
   role: string;
   role_id: number;
+  loketId: number;
   is_user_ppob: boolean;
   is_active: boolean;
   is_user_timtagih: boolean;
+  min_l: number;
+  max_l: number;
   loket_array: UserLoket[] | null;
 }
 

@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { User } from "./types/user";
-import { MenuGroup } from "./types/settings";
-
-const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login"));
+  } else if (
     (pathname === "/login" || pathname === "/register") &&
     request.cookies.has("token")
   )
@@ -25,13 +22,11 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
     if (settings) {
-      const decodedSettings = jwt.verify(settings, SECRET_KEY!) as JwtPayload;
-      const sidebar: MenuGroup[] = decodedSettings as MenuGroup[];
-
+      // const decodedSettings = jwt.verify(settings, SECRET_KEY!) as JwtPayload;
+      // const sidebar: MenuGroup[] = decodedSettings as MenuGroup[];
       // const allowedLinks = sidebar.flatMap((group) =>
       //   group.menus.map((menu) => `/admin/${menu.link}`)
       // );
-
       // if (!allowedLinks.includes(pathname)) {
       //   return NextResponse.redirect(new URL("/admin", request.url));
       // }

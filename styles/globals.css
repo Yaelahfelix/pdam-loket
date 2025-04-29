@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 html,
 body {
   padding: 0;
@@ -11,8 +10,6 @@ body {
 * {
   box-sizing: border-box;
 }
-
-
 
 @layer base {
   :root {
@@ -70,8 +67,6 @@ body {
   }
 }
 
-
-
 @layer base {
   * {
     @apply border-border;
@@ -79,4 +74,8 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.recharts-wrapper svg {
+  overflow: inherit !important;
 }

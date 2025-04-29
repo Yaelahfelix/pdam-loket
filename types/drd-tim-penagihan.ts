@@ -1,0 +1,33 @@
+export interface DRDTimPenagihan {
+  user_id: number;
+  denda: string;
+  rekair: string;
+  angsuran: string;
+  minper: string;
+  maxper: string;
+  no_pelanggan: string;
+  nama: string;
+  jmlrek: number;
+  lbrlunas: string;
+  dendalunas: string;
+  rekairlunas: string;
+  angsuranlunas: string;
+  meterailunas: string;
+  meteraitagih: string;
+  userlunas: string;
+  timtagih: string;
+  tglbayar: string;
+  alamat: string;
+  no_hp: string;
+  latitude: string;
+  longitude: string;
+  kode_golongan: string;
+  periodetag: string;
+  rayon: string;
+  ttltagihan: string;
+  ttltagihanlunas: string;
+  sisarek: string;
+  sisatagihan: string;
+  status: number;
+  jrek: number;
+}

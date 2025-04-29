@@ -137,7 +137,11 @@ export const FormPelanggan = ({
                       return (
                         <>
                           <div className="flex flex-col w-full gap-4 mb-4">
-                            <ComboboxPelanggan setFieldValue={setFieldValue} />
+                            <ComboboxPelanggan
+                              handler={(value) => {
+                                setFieldValue("no_pelanggan", value);
+                              }}
+                            />
                           </div>
                           <div className="flex justify-end gap-5 pb-5">
                             <Button

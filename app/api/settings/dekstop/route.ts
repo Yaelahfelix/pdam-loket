@@ -8,7 +8,7 @@ export const GET = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const db = await getConnection();
@@ -35,7 +35,7 @@ export const PUT = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -51,7 +51,7 @@ export const PUT = async (request: NextRequest) => {
 
     const updateQuery = `
         UPDATE sipamit_billing.settingdesktop 
-        SET  headerlap1 = ?, headerlap2 = ?, alamat1 = ?, alamat2 = ?, footerkota = ?, stricpayment = ?,
+        SET  headerlap1 = ?, headerlap2 = ?, alamat1 = ?, alamat2 = ?, footerkota = ?, stricpayment = ?
         WHERE idx = 1
       `;
 

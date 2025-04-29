@@ -39,7 +39,7 @@ export const Login = () => {
 
   const handleLogin = useCallback(
     async (
-      values: LoginFormType,
+    values: LoginFormType,
       { setFieldError }: FormikHelpers<LoginFormType>
     ) => {
       setIsLoading(true);
@@ -79,10 +79,12 @@ export const Login = () => {
       return setIsLoading(false);
     }
     setSession(
+      user.id,
       user.username,
       user.nama,
       user.jabatan,
       user.role,
+      selectedLoket?.id,
       selectedLoket?.kodeloket,
       user.is_user_ppob,
       user.is_active,

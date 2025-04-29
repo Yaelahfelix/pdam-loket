@@ -8,7 +8,7 @@ export const GET = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -17,24 +17,14 @@ export const GET = async (request: NextRequest) => {
     const db = await getConnection();
 
     const [pelanggan] = await db.query<RowDataPacket[]>(
-      `SELECT 
-        id, 
-        nama, 
-        alamat, 
-        no_pelanggan, 
-        status 
-      FROM 
-        sipamit_billing.pelanggan 
-      WHERE 
-        nama LIKE ? OR 
-        no_pelanggan LIKE ? 
-      ORDER BY 
-        nama ASC 
-      LIMIT 10`,
-      [`%${searchQuery}%`, `%${searchQuery}%`]
+      `select id,no_pelanggan,nama,alamat, status from pelanggan where
+locate(?,CONCAT_WS(' ',no_pelanggan,nama,alamat))
+ORDER BY nama asc
+      LIMIT 10 
+      `,
+      [`${searchQuery}`]
     );
 
-    // Transform data sesuai dengan tipe yang dibutuhkan
     const formattedData = pelanggan.map((row) => ({
       id: row.id,
       nama: row.nama,

@@ -6,6 +6,8 @@ import { useSidebarContext } from "../layout/layout-context";
 import { usePathname } from "next/navigation";
 
 import { MenuGroup } from "@/types/settings";
+import { icons } from "@/lib/icons";
+import Image from "next/image";
 
 export const SidebarWrapper = ({
   sidebar,
@@ -19,7 +21,7 @@ export const SidebarWrapper = ({
   return (
     <aside className="h-screen z-[20] sticky top-0">
       {collapsed ? (
-        <div className={Sidebar.Overlay()} onClick={setCollapsed} />
+        <div className={Sidebar.Overlay()} onClick={() => setCollapsed} />
       ) : null}
       <div
         className={Sidebar({
@@ -28,10 +30,10 @@ export const SidebarWrapper = ({
       >
         <div className={Sidebar.Header()}>
           <div className="flex items-center gap-2">
-            {/* {company.logo} */}
+            <Image src="/logo/loket.png" width={50} height={50} alt="" />
             <div className="flex flex-col gap-4">
               <h3 className="text-xl font-medium m-0 text-default-900 -mb-4 whitespace-nowrap">
-                {loket}
+                SiPAMIT Loket
               </h3>
               <span className="text-xs font-medium text-default-500">
                 PDAM Probolinggo
@@ -45,6 +47,9 @@ export const SidebarWrapper = ({
               <SidebarMenu title={group.group_name} key={i}>
                 {group.menus.map((menu) => (
                   <SidebarItem
+                    icon={
+                      icons.find((icon) => icon.name === menu.icon)?.component
+                    }
                     key={menu.link}
                     isActive={pathname === `/admin/${menu.link}`}
                     title={menu.menu_name}

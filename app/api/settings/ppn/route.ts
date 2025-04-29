@@ -9,7 +9,7 @@ export const GET = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
     const query = "SELECT * FROM sipamit_billing.setup_ppn";
     const [data] = await db.query<RowDataPacket[]>(query);
@@ -30,15 +30,17 @@ export const POST = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
     const { jml, mulaitgl } = body;
 
+    console.log(body);
+
     if (jml === undefined || !mulaitgl) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -69,7 +71,7 @@ export const PUT = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -77,7 +79,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (!id || jml === undefined || !mulaitgl) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -108,7 +110,7 @@ export const DELETE = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -116,7 +118,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }

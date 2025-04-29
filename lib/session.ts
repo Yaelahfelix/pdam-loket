@@ -1,14 +1,20 @@
 "use server";
 
 import { User } from "@/types/user";
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { SignJWT, jwtVerify } from "jose";
 
 const SECRET_KEY = process.env.JWT_SECRET_KEY;
 if (!SECRET_KEY) {
   throw new Error("JWT_SECRET_KEY is not defined in environment variables");
 }
+
+// Convert string to Uint8Array for jose
+const getSecretKey = () => {
+  return new TextEncoder().encode(SECRET_KEY);
+};
+
 export const verifyAuth = async (request: NextRequest) => {
   const authHeader = request.headers.get("Authorization");
 
@@ -22,8 +28,8 @@ export const verifyAuth = async (request: NextRequest) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decodedToken = jwt.verify(token, SECRET_KEY) as JwtPayload;
-    const user: User = decodedToken as User;
+    const { payload } = await jwtVerify(token, getSecretKey());
+    const user = payload as unknown as User;
     return {
       isAuthenticated: true,
       user,
@@ -37,10 +43,12 @@ export const verifyAuth = async (request: NextRequest) => {
 };
 
 export const setSession = async (
+  id: number,
   username: string,
   nama: string,
   jabatan: string,
   role: string,
+  loketId: number,
   kodeloket: string,
   is_user_ppob: boolean,
   is_active: boolean,
@@ -48,23 +56,32 @@ export const setSession = async (
   role_id: number
 ) => {
   try {
-    const token = jwt.sign(
-      {
-        username,
-        nama,
-        jabatan,
-        role,
-        role_id,
-        kodeloket,
-        is_user_ppob,
-        is_active,
-        is_user_timtagih,
-      },
-      SECRET_KEY
-    );
+    const token = await new SignJWT({
+      id,
+      username,
+      nama,
+      jabatan,
+      role,
+      role_id,
+      loketId,
+      kodeloket,
+      is_user_ppob,
+      is_active,
+      is_user_timtagih,
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      // Not setting expiration as it wasn't in the original code
+      .sign(getSecretKey());
 
+    console.log("loketid" + loketId);
     const cookieStore = await cookies();
     cookieStore.set("token", token);
+
+    return {
+      status: 200,
+      message: "Session created successfully",
+    };
   } catch (error: any) {
     return {
       status: 500,
@@ -80,9 +97,17 @@ export const getSession = async () => {
   if (!token) {
     return null;
   }
-  const session = jwt.verify(token.value, SECRET_KEY);
-  return {
-    session,
-    token,
-  };
+
+  try {
+    const { payload }: { payload: User } = await jwtVerify(
+      token.value,
+      getSecretKey()
+    );
+    return {
+      session: payload,
+      token,
+    };
+  } catch (error) {
+    return null;
+  }
 };

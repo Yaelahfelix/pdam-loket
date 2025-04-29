@@ -13,12 +13,14 @@ import React, { useEffect, useState } from "react";
 import { ExportIcon } from "@/components/icons/accounts/export-icon";
 import { AdjustmentsVerticalIcon } from "@heroicons/react/24/solid";
 import { Role } from "@/types/role";
-import useUpdateQuery from "@/components/hooks/useUpdateQuery";
 import { RotateCw } from "lucide-react";
 import { Form } from "./form";
 import { useRoleStore } from "@/store/role";
 import { Loket } from "@/types/loket";
 import { useLoketStore } from "@/store/userloket";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import useUpdateQuery from "@/components/hooks/useUpdateQuery";
+import { useDebounce } from "use-debounce";
 
 function TableFunction({
   roles,
@@ -36,25 +38,37 @@ function TableFunction({
   limit: string;
 }) {
   const [query, setQuery] = useState("");
-
+  const [qDebounce] = useDebounce(query, 300);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const updateQuery = useUpdateQuery();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { setRoles } = useRoleStore();
   const { setLoket } = useLoketStore();
+  const updateQuery = useUpdateQuery();
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (query) {
-      updateQuery({ q: query });
+    if (qDebounce) {
+      updateQuery({ q: qDebounce });
     } else {
       updateQuery({ q: null });
     }
-  }, [query]);
+  }, [qDebounce]);
 
   useEffect(() => {
     setRoles(roles);
     setLoket(loket);
+  }, [roles, loket, setRoles, setLoket]);
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("q");
+    if (urlQuery) {
+      setQuery(urlQuery);
+    }
   }, []);
+
   return (
     <div className="flex justify-between flex-wrap gap-4 items-center">
       <div className="flex items-center gap-3 flex-wrap md:flex-nowrap">

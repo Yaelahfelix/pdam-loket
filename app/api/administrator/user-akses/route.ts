@@ -16,7 +16,7 @@ export const GET = async (request: NextRequest) => {
   const authResult = await verifyAuth(request);
 
   if (!authResult.isAuthenticated) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+    return NextResponse.json({ message: authResult.error }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -65,7 +65,7 @@ LEFT JOIN plot_tim_tagih ptt on ptt.user_id = u.id
       let conditions: string[] = [];
 
       if (query) {
-        baseQuery += ` WHERE (u.username LIKE ? OR u.nama LIKE ?) `;
+        conditions.push(`(u.username LIKE ? OR u.nama LIKE ?)`);
         paramsArray.push(`%${query}%`, `%${query}%`);
       }
 
@@ -87,9 +87,10 @@ LEFT JOIN plot_tim_tagih ptt on ptt.user_id = u.id
       if (conditions.length > 0) {
         baseQuery += ` WHERE ` + conditions.join(" AND ");
       }
+
       baseQuery += `
         GROUP BY u.id, u.username, u.nama, u.jabatan, r.role, u.is_user_ppob, u.is_active, u.is_user_timtagih
-      `;
+    `;
 
       return await getPaginatedData<UserRecord>(
         db,
@@ -108,7 +109,7 @@ export const POST = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -134,7 +135,7 @@ export const POST = async (request: NextRequest) => {
       is_user_timtagih === undefined
     ) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -195,7 +196,7 @@ export const PUT = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const body = await request.json();
@@ -219,7 +220,7 @@ export const PUT = async (request: NextRequest) => {
       is_user_timtagih === undefined
     ) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { message: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -229,7 +230,7 @@ export const PUT = async (request: NextRequest) => {
 
     if (userCheck[0].count === 0) {
       return NextResponse.json(
-        { error: "User tidak ditemukan" },
+        { message: "User tidak ditemukan" },
         { status: 404 }
       );
     }
@@ -272,7 +273,7 @@ export const DELETE = async (request: NextRequest) => {
     const authResult = await verifyAuth(request);
 
     if (!authResult.isAuthenticated) {
-      return NextResponse.json({ error: authResult.error }, { status: 401 });
+      return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -280,7 +281,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (!id) {
       return NextResponse.json(
-        { error: "Missing required field: id" },
+        { message: "Missing required field: id" },
         { status: 400 }
       );
     }
@@ -290,7 +291,7 @@ export const DELETE = async (request: NextRequest) => {
 
     if (userCheck[0].count === 0) {
       return NextResponse.json(
-        { error: "User tidak ditemukan" },
+        { message: "User tidak ditemukan" },
         { status: 404 }
       );
     }

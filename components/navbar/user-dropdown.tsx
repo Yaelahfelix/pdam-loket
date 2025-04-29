@@ -17,8 +17,9 @@ export const UserDropdown = ({ user }: { user: User }) => {
   const router = useRouter();
 
   const handleLogout = useCallback(async () => {
-    await deleteAuthCookie();
     await deleteSidebar();
+
+    await deleteAuthCookie();
     router.replace("/login");
   }, [router]);
 

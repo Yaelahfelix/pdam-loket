@@ -1,7 +1,8 @@
 "use client";
 
 import { deleteAuthCookie } from "@/actions/auth.action";
-import { UserSchema } from "@/helpers/schemas";
+import LocationInputForm from "@/components/form/Location";
+import { DendaSchema, UserSchema } from "@/helpers/schemas";
 import { UserFormType } from "@/helpers/types";
 import { defaultErrorHandler } from "@/lib/dbQuery/defaultErrorHandler";
 import { getSession } from "@/lib/session";
@@ -12,12 +13,14 @@ import {
 } from "@/lib/toast/templatemsg/error";
 import { ErrorResponse } from "@/types/axios";
 import { Role } from "@/types/role";
+import { Denda } from "@/types/settings";
 import { User } from "@/types/user";
 import {
   addToast,
   Button,
   Checkbox,
   CheckboxGroup,
+  Divider,
   Input,
   Modal,
   ModalBody,
@@ -33,52 +36,30 @@ import { ErrorMessage, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/navigation";
 import React, { ReactNode, useCallback, useState } from "react";
 
-export const Form = ({
-  roles,
-  isEdit = false,
-  user,
-  diclosure,
-}: {
-  roles: Role[];
-  isEdit?: boolean;
-  user?: User;
-  diclosure: {
-    isOpen: boolean;
-    onOpenChange: () => void;
-  };
-}) => {
+export const FormDenda = ({ data }: { data: Denda }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { isOpen, onOpenChange } = diclosure;
   const Router = useRouter();
 
-  const initialValues: UserFormType = {
-    id: user?.id,
-    username: user?.username || "",
-    password: user?.username ? "Tidak bisa diedit" : "",
-    nama: user?.nama || "",
-    jabatan: user?.jabatan || "",
-    role_id: user?.role_id || undefined,
-    is_user_ppob: !!user?.is_user_ppob,
-    is_active: !!user?.is_active,
-    is_user_timtagih: !!user?.is_user_timtagih,
+  const initialValues: Denda = {
+    idx: data.idx,
+    denda1: data.denda1,
+    denda2: data.denda2,
+    flagpersen: data.flagpersen,
+    tgl1: data.tgl1,
+    tgl2: data.tgl2,
   };
 
   const handleUserSubmit = useCallback(
-    async (
-      values: UserFormType,
-      { setFieldError }: FormikHelpers<UserFormType>,
-      onClose: () => void
-    ) => {
+    async (values: Denda, { setFieldError }: FormikHelpers<Denda>) => {
+      setIsLoading(true);
       const session = await getSession();
-      const method = isEdit ? "put" : "post";
-      axios[method]("/api/administrator/user-akses", values, {
+      axios["put"]("/api/settings/denda", values, {
         headers: {
           Authorization: `Bearer ${session?.token.value}`,
         },
       })
         .then((res) => {
           addToast({ color: "success", title: res.data.message });
-          onClose();
           Router.refresh();
         })
         .catch(async (err: AxiosError<ErrorResponse>) => {
@@ -92,7 +73,11 @@ export const Form = ({
             return Router.replace("/login");
           }
           if (err.status !== 500) {
-            return setFieldError("username", err.response?.data.message);
+            return addToast({
+              title: "Gagal memperbarui data!",
+              description: err.response?.data.message,
+              color: "danger",
+            });
           }
           addToast({
             title: "Gagal memperbarui data!",
@@ -105,163 +90,92 @@ export const Form = ({
   );
   return (
     <div>
-      <>
-        <Modal
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          placement="top-center"
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  {isEdit ? "Edit" : "Add"} User {user?.id}
-                </ModalHeader>
-                <ModalBody>
-                  <Formik
-                    initialValues={initialValues}
-                    validationSchema={UserSchema}
-                    onSubmit={(values, actions) =>
-                      handleUserSubmit(values, actions, onClose)
-                    }
-                  >
-                    {({
-                      values,
-                      errors,
-                      touched,
-                      handleChange,
-                      handleSubmit,
-                      setFieldValue,
-                    }) => {
-                      return (
-                        <>
-                          <div className="flex flex-col w-full gap-4 mb-4">
-                            <Input
-                              variant="bordered"
-                              label="Nama"
-                              type="text"
-                              value={values.nama}
-                              isInvalid={!!errors.nama && !!touched.nama}
-                              errorMessage={errors.nama}
-                              onChange={handleChange("nama")}
-                            />
-                            <Input
-                              variant="bordered"
-                              label="Jabatan"
-                              type="text"
-                              value={values.jabatan}
-                              isInvalid={!!errors.jabatan && !!touched.jabatan}
-                              errorMessage={errors.jabatan}
-                              onChange={handleChange("jabatan")}
-                            />
-                            <Select
-                              label="Role"
-                              isInvalid={errors?.role_id ? true : false}
-                              errorMessage={errors?.role_id}
-                              selectedKeys={values.role_id?.toString() || ""}
-                              onSelectionChange={(value) => {
-                                console.log(value);
-                                setFieldValue(
-                                  "role_id",
-                                  Number(value.currentKey)
-                                );
-                              }}
-                            >
-                              {roles.map((role) => (
-                                <SelectItem key={role.id.toString()}>
-                                  {role.role}
-                                </SelectItem>
-                              ))}
-                            </Select>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={DendaSchema}
+        onSubmit={(values, actions) => handleUserSubmit(values, actions)}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleChange,
+          handleSubmit,
+          setFieldValue,
+        }) => {
+          return (
+            <>
+              <div className="flex flex-col w-full gap-4 mb-4">
+                <h3>Setup denda 1</h3>
+                <Input
+                  variant="bordered"
+                  label="Tanggal 1"
+                  type="number"
+                  value={values.tgl1?.toString() || ""}
+                  isInvalid={!!errors.tgl1 && !!touched.tgl1}
+                  errorMessage={errors.tgl1}
+                  onChange={handleChange("tgl1")}
+                />
+                <Input
+                  variant="bordered"
+                  label="Denda 1"
+                  type="text"
+                  value={new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    maximumFractionDigits: 0,
+                  }).format(values.denda1 || 0)}
+                  isInvalid={!!errors.denda1 && !!touched.denda1}
+                  errorMessage={errors.denda1}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, "");
+                    setFieldValue("denda1", parseInt(value, 10));
+                  }}
+                />
+                <Divider className="my-3" />
+                <h3>Setup denda 2</h3>
 
-                            <Input
-                              variant="bordered"
-                              label="Username"
-                              type="text"
-                              isDisabled={isEdit}
-                              value={values.username}
-                              isInvalid={
-                                !!errors.username && !!touched.username
-                              }
-                              errorMessage={errors.username}
-                              onChange={handleChange("username")}
-                            />
-                            <Input
-                              variant="bordered"
-                              label="Password"
-                              type="password"
-                              isDisabled={isEdit}
-                              value={values.password}
-                              isInvalid={
-                                !!errors.password && !!touched.password
-                              }
-                              errorMessage={errors.password}
-                              onChange={handleChange("password")}
-                            />
-
-                            <div className="flex justify-between w-full">
-                              <Checkbox
-                                isSelected={values.is_user_ppob}
-                                className=""
-                                onChange={() =>
-                                  setFieldValue(
-                                    "is_user_ppob",
-                                    !values.is_user_ppob
-                                  )
-                                }
-                              >
-                                PPOB User
-                              </Checkbox>
-                              <Checkbox
-                                value="is_active"
-                                isSelected={values.is_active}
-                                onChange={() =>
-                                  setFieldValue("is_active", !values.is_active)
-                                }
-                              >
-                                Active
-                              </Checkbox>
-                              <Checkbox
-                                value="is_user_timtagih"
-                                isSelected={values.is_user_timtagih}
-                                onChange={() =>
-                                  setFieldValue(
-                                    "is_user_timtagih",
-                                    !values.is_user_timtagih
-                                  )
-                                }
-                              >
-                                Tim Tagih
-                              </Checkbox>
-                            </div>
-                          </div>
-                          <div className="flex justify-end gap-5 pb-5">
-                            <Button
-                              color="danger"
-                              variant="flat"
-                              onPress={onClose}
-                            >
-                              Close
-                            </Button>
-                            <Button
-                              color="primary"
-                              onPress={() => handleSubmit()}
-                              type="submit"
-                              isLoading={isLoading}
-                            >
-                              {isEdit ? "Edit" : "Add"} User
-                            </Button>
-                          </div>
-                        </>
-                      );
-                    }}
-                  </Formik>
-                </ModalBody>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-      </>
+                <Input
+                  variant="bordered"
+                  label="Tanggal 2"
+                  type="number"
+                  value={values.tgl2?.toString() || ""}
+                  isInvalid={!!errors.tgl2 && !!touched.tgl2}
+                  errorMessage={errors.tgl2}
+                  onChange={handleChange("tgl2")}
+                />
+                <Input
+                  variant="bordered"
+                  label="Denda 2"
+                  type="text"
+                  value={new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    maximumFractionDigits: 0,
+                  }).format(values.denda2 || 0)}
+                  isInvalid={!!errors.denda2 && !!touched.denda2}
+                  errorMessage={errors.denda2}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, "");
+                    setFieldValue("denda2", parseInt(value, 10));
+                  }}
+                />
+              </div>
+              <div className="mt-5">
+                <Button
+                  className="w-full"
+                  color="primary"
+                  onPress={() => handleSubmit()}
+                  type="submit"
+                  isLoading={isLoading}
+                >
+                  Edit Denda
+                </Button>
+              </div>
+            </>
+          );
+        }}
+      </Formik>
     </div>
   );
 };

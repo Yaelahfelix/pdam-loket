@@ -12,7 +12,7 @@ export interface ProvidersProps {
 
 export function Providers({ children, themeProps }: ProvidersProps) {
   return (
-    <HeroUIProvider>
+    <HeroUIProvider locale="id-ID">
       <NextThemesProvider
         defaultTheme="system"
         attribute="class"

@@ -41,3 +41,22 @@ export interface KolektifPelangganFormType {
   kolektif_id: number;
   no_pelanggan: string;
 }
+
+export interface TTDFormType {
+  header1: string;
+  header2: string;
+  header3: string;
+  header4: string;
+  id1: number;
+  id2: number;
+  id3: number;
+  id4: number;
+  is_id_1: boolean;
+  is_id_2: boolean;
+  is_id_3: boolean;
+  is_id_4: boolean;
+  nama1: string;
+  nama2: string;
+  nama3: string;
+  nama4: string;
+}

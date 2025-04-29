@@ -55,6 +55,7 @@ LEFT JOIN role_akses ra ON ra.menu_id = md.id
       menu: groupedMenu,
     });
   } catch (err) {
+    console.log(err);
     return NextResponse.json(
       {
         status: 500,

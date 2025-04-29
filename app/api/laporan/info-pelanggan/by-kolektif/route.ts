@@ -47,7 +47,7 @@ export const GET = async (request: NextRequest) => {
 
     const totalBelumLunas = allBlmLunas.reduce((sum, pelanggan) => {
       const totalPelanggan = pelanggan.tagihanBlmLunas.reduce(
-        (subtotal, tagihan) => {
+        (subtotal: any, tagihan: any) => {
           return subtotal + Number(tagihan.totalrek);
         },
         0

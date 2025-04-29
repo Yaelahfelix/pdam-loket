@@ -1,15 +1,9 @@
 "use client";
 
-import { DataTable } from "@/components/data-table";
-import { User } from "@/types/user";
-import { ColumnDef } from "@tanstack/react-table";
 import React, { useEffect } from "react";
-import { columns } from "./columns";
-import { useLPPRekAirStore } from "@/store/lppRekAir";
 import useSWR from "swr";
 import fetcher from "@/lib/swr/fetcher";
 import { useSearchParams } from "next/navigation";
-import { id } from "date-fns/locale";
 import {
   Card,
   CardHeader,
@@ -104,7 +98,10 @@ const DataTableClient = () => {
         </div>
       ) : (
         <>
-          {pelangganData || kolektifData ? (
+          {(pelangganData &&
+            (pelangganData?.tagihanSdhLunas.length !== 0 ||
+              pelangganData?.tagihanBlmLunas.length !== 0)) ||
+          (kolektifData && kolektifData?.kolektifBlmLunas.length !== 0) ? (
             <>
               {pelangganData && (
                 <PelangganTable pelangganData={pelangganData} />

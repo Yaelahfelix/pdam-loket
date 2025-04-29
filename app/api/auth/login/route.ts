@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     // ! Cek loket user
     const queryLoket = `
-    SELECT l.kodeloket, l.loket, l.aktif as is_loket_aktif, ul.aktif
+    SELECT l.id,  l.kodeloket, l.loket, l.aktif as is_loket_aktif, ul.aktif
   FROM user_loket ul 
   LEFT JOIN loket l 
   ON ul.loket_id = l.id WHERE ul.user_id = ? AND l.aktif = 1;

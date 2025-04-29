@@ -33,7 +33,7 @@ export const GET = async (request: NextRequest) => {
       SELECT 
         a.no_pelanggan, a.nama, a.golongan, a.kodegol,  a.meterai, a.denda, a.admin_ppob, a.totalrekening,
         convertperiode(a.periode_rek) as periodestr,
-        a.harga_air+a.airlimbah+a.administrasi+a.pemeliharaan+a.retribusi+a.pelayanan+a.angsuran as rekair 
+        a.harga_air+a.airlimbah+a.administrasi+a.pemeliharaan+a.retribusi+a.pelayanan+a.angsuran as rekair, a.tglbayar
       FROM drd a 
       WHERE date(tglbayar) BETWEEN ? AND ?
     `;
@@ -55,7 +55,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     if (golId) {
-      query += " AND a.golongan_id = ?";
+      query += " AND a.gol_id = ?";
       params.push(golId);
     }
 

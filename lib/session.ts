@@ -43,10 +43,12 @@ export const verifyAuth = async (request: NextRequest) => {
 };
 
 export const setSession = async (
+  id: number,
   username: string,
   nama: string,
   jabatan: string,
   role: string,
+  loketId: number,
   kodeloket: string,
   is_user_ppob: boolean,
   is_active: boolean,
@@ -55,11 +57,13 @@ export const setSession = async (
 ) => {
   try {
     const token = await new SignJWT({
+      id,
       username,
       nama,
       jabatan,
       role,
       role_id,
+      loketId,
       kodeloket,
       is_user_ppob,
       is_active,
@@ -70,6 +74,7 @@ export const setSession = async (
       // Not setting expiration as it wasn't in the original code
       .sign(getSecretKey());
 
+    console.log("loketid" + loketId);
     const cookieStore = await cookies();
     cookieStore.set("token", token);
 

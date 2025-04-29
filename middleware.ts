@@ -4,7 +4,9 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login"));
+  } else if (
     (pathname === "/login" || pathname === "/register") &&
     request.cookies.has("token")
   )

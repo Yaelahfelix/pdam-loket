@@ -8,7 +8,7 @@ function BreadcrumbsComponent() {
     <Breadcrumbs>
       <BreadcrumbItem>Dashboard</BreadcrumbItem>
       <BreadcrumbItem>Administrator</BreadcrumbItem>
-      <BreadcrumbItem>User Akses</BreadcrumbItem>
+      <BreadcrumbItem>Pengaturan Aplikasi</BreadcrumbItem>
     </Breadcrumbs>
   );
 }

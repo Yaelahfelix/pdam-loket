@@ -10,6 +10,7 @@ import { UserFormType } from "@/helpers/types";
 import { defaultErrorHandler } from "@/lib/dbQuery/defaultErrorHandler";
 import { getSession } from "@/lib/session";
 import { deleteSidebar } from "@/lib/sidebar";
+import fetcher from "@/lib/swr/fetcher";
 import {
   errToast_INTERNALSERVER,
   errToast_UNAUTHORIZED,
@@ -37,7 +38,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { ErrorMessage, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/navigation";
-import React, { ReactNode, useCallback, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
 
 export const FormDekstop = ({ data }: { data: DekstopSettings }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +55,7 @@ export const FormDekstop = ({ data }: { data: DekstopSettings }) => {
     information: data.information,
     stricpayment: !!data.stricpayment,
   };
+  const [passAdmin, setPassAdmin] = useState("");
   const handleUserSubmit = useCallback(
     async (
       values: DekstopSettings,
@@ -96,6 +98,12 @@ export const FormDekstop = ({ data }: { data: DekstopSettings }) => {
     },
     []
   );
+
+  useEffect(() => {
+    fetcher("/api/settings/pass-admin").then((res) => {
+      setPassAdmin(res.data.passadmin);
+    });
+  }, []);
   return (
     <div>
       <Formik
@@ -114,6 +122,15 @@ export const FormDekstop = ({ data }: { data: DekstopSettings }) => {
           return (
             <>
               <div className="flex flex-col w-full gap-4 mb-4">
+                <Input
+                  variant="bordered"
+                  label="Pass Admin"
+                  type="text"
+                  value={passAdmin}
+                  disabled
+                />
+                <Divider className="my-1" />
+
                 <Input
                   variant="bordered"
                   label="Header 1"

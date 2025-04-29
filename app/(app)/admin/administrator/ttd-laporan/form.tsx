@@ -145,7 +145,7 @@ export const FormTTD = ({ data }: { data: TTD }) => {
                         <ModalBody>
                           <ComboboxUserParaf
                             handler={(val, name) => {
-                              setFieldValue(selectedId, val);
+                              setFieldValue("pelanggan_id", val);
                               setFieldValue(selectedNameId, name);
                             }}
                           />

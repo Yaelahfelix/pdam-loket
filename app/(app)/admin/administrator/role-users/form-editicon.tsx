@@ -107,7 +107,7 @@ export const FormEditIcon = ({
     isOpen && getData();
   }, [isOpen]);
 
-  const handleIconSelect = async (menuId, iconName) => {
+  const handleIconSelect = async (menuId: string, iconName: string) => {
     const session = await getSession();
     axios
       .put(
@@ -221,6 +221,7 @@ export const FormEditIcon = ({
                                 <TableCell>
                                   <IconSelector
                                     menu={menu}
+                                    // @ts-ignore
                                     onIconSelect={handleIconSelect}
                                   />
                                 </TableCell>

@@ -11,7 +11,7 @@ export const GET = async (request: NextRequest) => {
     if (!authResult.isAuthenticated) {
       return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
-    const query = "SELECT * FROM sipamit_billing.loket";
+    const query = "SELECT * FROM sipamit_billing.loket ORDER BY loket ASC";
     const [data] = await db.query<RowDataPacket[]>(query);
 
     return NextResponse.json({ status: 200, data });

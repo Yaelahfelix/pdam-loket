@@ -64,7 +64,7 @@ const UserAkses = () => {
       params.append("is_user_timtagih", isUserTimtagih ? "1" : "0");
     }
 
-    return `${BASEURL}/api/administrator/user-akses?${params.toString()}`;
+    return `/api/administrator/user-akses?${params.toString()}`;
   };
 
   const {

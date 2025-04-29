@@ -1,10 +1,6 @@
 "use client";
 
-import { DataTable } from "@/components/data-table";
-import { User } from "@/types/user";
-import { ColumnDef } from "@tanstack/react-table";
 import React, { useEffect } from "react";
-import { columns } from "./columns";
 import { useLPPRekAirStore } from "@/store/lppRekAir";
 import useSWR from "swr";
 import fetcher from "@/lib/swr/fetcher";
@@ -22,20 +18,31 @@ import {
 } from "@heroui/react";
 import { DRD, TotalDRD } from "@/types/drd";
 import { useFilterStore } from "./useFilterStore";
+import { id } from "date-fns/locale";
+import { formatDate } from "date-fns";
 
-type Props = {};
+type Props = { filterLoading: boolean };
 
-const DataTableClient = () => {
+const DataTableClient = ({ filterLoading }: Props) => {
   const searchParams = useSearchParams();
   const tgl1 = searchParams.get("tgl1");
   const tgl2 = searchParams.get("tgl2");
   const { drd, setDrd } = useLPPRekAirStore();
-  const { kasir, loket, golongan, kecamatan } = useFilterStore();
+  const {
+    kasir,
+    kasirName,
+    loket,
+    loketName,
+    golonganName,
+    kecamatanName,
+    golongan,
+    kecamatan,
+  } = useFilterStore();
   const extraQuery = new URLSearchParams({
-    ...(kasir ? { user_id: kasir } : {}),
-    ...(loket ? { loket_id: loket } : {}),
-    ...(golongan ? { gol_id: golongan } : {}),
-    ...(kecamatan ? { kec_id: kecamatan } : {}),
+    ...(kasir ? { user_id: kasir, user_name: kasirName } : {}),
+    ...(loket ? { loket_id: loket, loket_name: loketName } : {}),
+    ...(golongan ? { gol_id: golongan, gol_name: golonganName } : {}),
+    ...(kecamatan ? { kec_id: kecamatan, kec_name: kecamatanName } : {}),
   }).toString();
   const query = extraQuery ? `&${extraQuery}` : "";
   const { data, error, isLoading } = useSWR<{ data: DRD[]; total: TotalDRD }>(
@@ -45,13 +52,15 @@ const DataTableClient = () => {
     fetcher
   );
 
+  console.log(data);
+
   useEffect(() => {
     setDrd(data);
   }, [data]);
 
   return (
     <>
-      {isLoading ? (
+      {isLoading || filterLoading ? (
         <div className="p-5 border rounded-lg">
           <Skeleton className="h-56 w-full rounded-lg" />
         </div>
@@ -61,7 +70,7 @@ const DataTableClient = () => {
         </div>
       ) : (
         <>
-          {data ? (
+          {data && data?.data.length !== 0 ? (
             <div>
               <Table
                 classNames={{
@@ -71,7 +80,9 @@ const DataTableClient = () => {
               >
                 <TableHeader>
                   <TableColumn width={10}>No</TableColumn>
+                  <TableColumn width={120}>Tgl Bayar</TableColumn>
                   <TableColumn width={120}>Periode</TableColumn>
+
                   <TableColumn width={150}>No Pelanggan</TableColumn>
                   <TableColumn width={270}>Nama</TableColumn>
                   <TableColumn width={50}>Kode Gol</TableColumn>
@@ -86,6 +97,11 @@ const DataTableClient = () => {
                     data?.data.map((data, i) => (
                       <TableRow key={i}>
                         <TableCell>{data.no}</TableCell>
+                        <TableCell>
+                          {formatDate(data.tglbayar, "dd MMM yyyy HH:mm:ss", {
+                            locale: id,
+                          })}
+                        </TableCell>
                         <TableCell>{data.periodestr}</TableCell>
                         <TableCell>{data.no_pelanggan}</TableCell>
                         <TableCell>{data.nama}</TableCell>
@@ -103,6 +119,7 @@ const DataTableClient = () => {
               <Table hideHeader>
                 <TableHeader className="sticky top-0">
                   <TableColumn width={10}>No</TableColumn>
+
                   <TableColumn width={120}>Periode</TableColumn>
                   <TableColumn width={150}>No Pelanggan</TableColumn>
                   <TableColumn width={270}>Nama</TableColumn>

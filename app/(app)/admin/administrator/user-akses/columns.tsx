@@ -43,6 +43,17 @@ export const columns: ColumnDef<User>[] = [
       ),
   },
   {
+    accessorKey: "min_l",
+    header: "Min Lembar",
+    cell: ({ row }) => (row.original.min_l ? row.original.min_l : 0),
+  },
+  {
+    accessorKey: "max_l",
+    header: "Max Lembar",
+    cell: ({ row }) => (row.original.max_l ? row.original.max_l : 0),
+  },
+
+  {
     accessorKey: "is_active",
     header: "User Aktif",
     cell: ({ row }) =>

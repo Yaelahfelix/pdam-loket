@@ -14,6 +14,8 @@ import { formatRupiah } from "@/lib/utils";
 import fetcher from "@/lib/swr/fetcher";
 import { TTD } from "@/types/ttd";
 import clsx from "clsx";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 
 // Props type definition
 type DRDTableProps = {
@@ -21,12 +23,14 @@ type DRDTableProps = {
   title?: string;
   total?: TotalTagihan;
   subtitle?: string;
+  footer?: string;
   headerlap1?: string;
   dataKolektif?: DataKolektif;
   headerlap2?: string;
   alamat1?: string;
   alamat2?: string;
   signatureData?: TTD;
+  isLoading: boolean;
 };
 
 // Component to be printed
@@ -42,6 +46,7 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
       title = "LAPORAN TAGIHAN",
       signatureData,
       dataKolektif,
+      footer,
     },
     ref
   ) => {
@@ -346,7 +351,9 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                               textAlign: "right",
                             }}
                           >
-                            {formatRupiah(Number(item.denda1))}
+                            {formatRupiah(
+                              Number(item.denda1) + Number(item.denda2)
+                            )}
                           </td>
                           <td
                             style={{
@@ -432,7 +439,8 @@ const DRDTablePrintComponent = React.forwardRef<HTMLDivElement, DRDTableProps>(
                           fontSize: "12px",
                         }}
                       >
-                        Probolinggo, 28 Maret 2025
+                        {footer},{" "}
+                        {format(new Date(), "d MMMM yyyy", { locale: id })}
                       </div>
                       <Signature
                         position={signatureData?.jabatan3}
@@ -490,6 +498,10 @@ const PDFPelanggan: React.FC<DRDTableProps> = (props) => {
     @media print {
       @page { 
         size: A4; margin: 30px;
+                @bottom-right {
+        font-size: 12px;
+         content: counter(page) " / " counter(pages);
+        }
       }
    
         body { 
@@ -577,6 +589,7 @@ const PDFPelanggan: React.FC<DRDTableProps> = (props) => {
         onPress={handlePrint as any}
         color="primary"
         startContent={<Printer />}
+        isLoading={props.isLoading}
       >
         Cetak
       </Button>

@@ -22,19 +22,23 @@ import {
   PopoverTrigger,
 } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
+import { useDebounce } from "use-debounce";
 
 export function ComboboxPelanggan({
   handler,
+  isLoading = false,
   placeHolder = "Pilih pelanggan...",
 }: {
   handler: (value: string) => void;
   placeHolder?: string;
+  isLoading?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState("");
   const [pelangganList, setPelangganList] = useState<Pelanggan[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [qDebounce] = useDebounce(searchTerm, 1000);
   const searchParams = useSearchParams();
   const valueFromQuery = searchParams.get("no-pelanggan");
   const fetchData = useCallback(async (searchQuery = "") => {
@@ -79,9 +83,11 @@ export function ComboboxPelanggan({
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    fetchData(value);
   };
 
+  useEffect(() => {
+    fetchData(qDebounce);
+  }, [qDebounce]);
   const getSelectedPelanggan = (): Pelanggan | undefined => {
     return pelangganList.find((p) => p.id.toString() === value);
   };
@@ -100,6 +106,8 @@ export function ComboboxPelanggan({
           role="combobox"
           className="w-full justify-between"
           type="button"
+          variant="bordered"
+          isDisabled={isLoading}
           onPress={() => {
             setIsOpen(true);
           }}

@@ -14,7 +14,7 @@ import TableFunction from "./tableFunction";
 
 const UserAkses = () => {
   const { data, error, isLoading } = useSWR(
-    `${BASEURL}/api/administrator/role-users`,
+    `/api/administrator/role-users`,
     fetcher
   );
 

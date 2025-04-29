@@ -157,7 +157,7 @@ export const PelangganTable: React.FC<{ pelangganData: PelangganData }> = ({
         </TableHeader>
         <TableBody>
           <TableRow className="font-bold bg-default-100">
-            <TableCell colSpan={9}></TableCell>
+            <TableCell colSpan={9}> </TableCell>
             <TableCell>Total Lunas {pelangganData?.total.sdhLunas}</TableCell>
             <TableCell>Total Tagihan {pelangganData?.total.blmLunas}</TableCell>
             <TableCell>
@@ -227,7 +227,7 @@ export const KolektifTable: React.FC<{ kolektifData: KolektifData }> = ({
       </TableHeader>
       <TableBody>
         <TableRow className="font-bold bg-default-100">
-          <TableCell colSpan={11}></TableCell>
+          <TableCell colSpan={11}> </TableCell>
           <TableCell className="text-right">
             Total Belum Lunas {kolektifData.totalBlmLunas}
           </TableCell>

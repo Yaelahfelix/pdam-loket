@@ -19,9 +19,11 @@ import useUpdateQuery from "../hooks/useUpdateQuery";
 export function ComboboxKolektif({
   handler,
   placeHolder = "Pilih kolektif...",
+  isLoading = false,
 }: {
   handler: (value: string) => void;
   placeHolder?: string;
+  isLoading?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -100,6 +102,8 @@ export function ComboboxKolektif({
           role="combobox"
           className="w-full justify-between"
           type="button"
+          variant="bordered"
+          isDisabled={isLoading}
           onPress={() => {
             setIsOpen(true);
           }}

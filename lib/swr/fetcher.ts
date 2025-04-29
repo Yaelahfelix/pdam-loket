@@ -1,6 +1,7 @@
 import { ErrorResponse } from "@/types/axios";
 import axios, { AxiosError } from "axios";
 import { getSession } from "../session";
+import { addToast } from "@heroui/react";
 
 const fetcher = async (url: string) => {
   const session = await getSession();
@@ -19,8 +20,13 @@ const fetcher = async (url: string) => {
         await deleteAuthCookie();
         window.location.href = "/login";
       } else {
-        window.location.href = "/error";
+        addToast({
+          title: "Terjadi kesalahan!",
+          description: error.response?.data.message,
+          color: "danger",
+        });
       }
+
       throw error;
     });
 };

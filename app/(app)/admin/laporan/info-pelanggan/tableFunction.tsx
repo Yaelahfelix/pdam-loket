@@ -34,8 +34,7 @@ function TableFunction({}: {}) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const updateQuery = useUpdateQuery();
   const { data } = useInfoPelStore();
-
-  console.log(data);
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
   const noPelanggan = searchParams.get("no-pelanggan");
   const noKolektif = searchParams.get("kolektif_id");
@@ -60,11 +59,15 @@ function TableFunction({}: {}) {
   useEffect(() => {
     fetcher("/api/settings/dekstop").then((res) => {
       setDekstop(res.data);
+      fetcher("/api/ttd/info")
+        .then((res) => {
+          setSignatureData(res.data);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     });
-    fetcher("/api/ttd/info").then((res) => {
-      console.log(res);
-      setSignatureData(res.data);
-    });
+
     const urlQuery = searchParams.get("q");
     if (urlQuery) {
       setQuery(urlQuery);
@@ -117,23 +120,27 @@ function TableFunction({}: {}) {
 
         {noPelanggan ? (
           <PDFPelanggan
+            isLoading={isLoading}
             data={data?.tagihanBlmLunas}
             total={data?.total}
             dataKolektif={data?.dataKolektif}
             headerlap1={dekstop?.headerlap1}
             headerlap2={dekstop?.headerlap2}
             alamat1={dekstop?.alamat1}
+            footer={dekstop?.footerkota}
             alamat2={dekstop?.alamat2}
             signatureData={signatureData}
           />
         ) : noKolektif ? (
           <PDFKolektif
+            isLoading={isLoading}
             data={data?.kolektifBlmLunas}
             total={data?.totalBlmLunas}
             dataKolektif={data?.dataKolektif}
             headerlap1={dekstop?.headerlap1}
             headerlap2={dekstop?.headerlap2}
             alamat1={dekstop?.alamat1}
+            footer={dekstop?.footerkota}
             alamat2={dekstop?.alamat2}
             signatureData={signatureData}
           />

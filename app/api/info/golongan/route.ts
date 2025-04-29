@@ -12,7 +12,7 @@ export const GET = async (request: NextRequest) => {
       return NextResponse.json({ message: authResult.error }, { status: 401 });
     }
     const query =
-      "SELECT id, kode_golongan, nama FROM sipamit_billing.golongan;";
+      "SELECT id, kode_golongan, nama FROM sipamit_billing.golongan ORDER BY nama ASC;";
     const [data] = await db.query<RowDataPacket[]>(query);
 
     return NextResponse.json({ status: 200, data });

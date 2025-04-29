@@ -11,7 +11,7 @@ import { Skeleton } from "@heroui/react";
 import fetcher from "@/lib/swr/fetcher";
 import TableFunction from "./tableFunction";
 import BreadcrumbsComponent from "./breadcrumbs";
-import { columns } from "./columns";
+import { useInitFilterStore } from "./useFilterStore";
 
 export interface FilterData {
   golongan: Golongan[];
@@ -36,6 +36,7 @@ interface Golongan {
 }
 
 const UserAkses = () => {
+  const [filterLoading, setFilterLoading] = useState(false);
   const [filterData, setFilterData] = useState<FilterData>({
     golongan: [],
     user: [],
@@ -43,18 +44,29 @@ const UserAkses = () => {
     loket: [],
   });
   const getFilterData = async () => {
-    const { data: golongan } = await fetcher("/api/info/golongan");
-    const { data: user } = await fetcher("/api/info/user");
-    const { data: kecamatan } = await fetcher("/api/info/kecamatan");
-    const { data: loket } = await fetcher("/api/info/loket");
+    setFilterLoading(true);
 
-    setFilterData({
-      golongan,
-      user,
-      kecamatan,
-      loket,
-    });
+    try {
+      const [golonganResponse, userResponse, kecamatanResponse, loketResponse] =
+        await Promise.all([
+          fetcher("/api/info/golongan"),
+          fetcher("/api/info/user"),
+          fetcher("/api/info/kecamatan"),
+          fetcher("/api/info/loket"),
+        ]);
+
+      setFilterData({
+        golongan: golonganResponse.data,
+        user: userResponse.data,
+        kecamatan: kecamatanResponse.data,
+        loket: loketResponse.data,
+      });
+    } catch (error) {
+    } finally {
+      setFilterLoading(false);
+    }
   };
+  useInitFilterStore();
   useEffect(() => {
     getFilterData();
   }, []);
@@ -65,7 +77,7 @@ const UserAkses = () => {
       <h3 className="text-xl font-semibold">LPP Rek Air</h3>
 
       <TableFunction filter={filterData} />
-      <DataTableClient />
+      <DataTableClient filterLoading={filterLoading} />
     </div>
   );
 };

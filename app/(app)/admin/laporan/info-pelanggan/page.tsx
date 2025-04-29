@@ -11,7 +11,6 @@ import { Skeleton } from "@heroui/react";
 import fetcher from "@/lib/swr/fetcher";
 import TableFunction from "./tableFunction";
 import BreadcrumbsComponent from "./breadcrumbs";
-import { columns } from "./columns";
 
 const UserAkses = () => {
   return (

@@ -7,7 +7,7 @@ import {
   DropdownTrigger,
   useDisclosure,
 } from "@heroui/react";
-import { EllipsisVertical, Pencil, Plus, Trash } from "lucide-react";
+import { EllipsisVertical, File, Pencil, Plus, Trash } from "lucide-react";
 import React, { useState } from "react";
 import { Form } from "./form";
 import { Role } from "@/types/role";
@@ -21,6 +21,7 @@ import { ErrorResponse } from "@/types/axios";
 import { FormLoket } from "./form-loket";
 import { Loket } from "@/types/loket";
 import { useLoketStore } from "@/store/userloket";
+import { FormKoreksiLembar } from "./form-koreksi-lembar";
 
 type Props = { user: User };
 
@@ -45,6 +46,12 @@ function Actions({ user }: Props) {
     isOpen: isLoketOpen,
     onOpen: onLoketOpen,
     onOpenChange: onLoketOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isKoreksiOpen,
+    onOpen: onKoreksiOpen,
+    onOpenChange: onKoreksiOpenChange,
   } = useDisclosure();
 
   const deleteHandler = async () => {
@@ -79,10 +86,18 @@ function Actions({ user }: Props) {
         <DropdownMenu aria-label="Actions">
           <DropdownItem
             key="tambah_loket"
-            startContent={<Plus className="w-4 h-4" />}
+            startContent={<Plus className="w-5 h-4" />}
             onPress={onLoketOpen}
           >
             Tambah Loket
+          </DropdownItem>
+          <DropdownItem
+            key="koreksi_lembar"
+            startContent={<File className="w-5 h-4" />}
+            onPress={onKoreksiOpen}
+            isDisabled={!user.is_user_timtagih}
+          >
+            Koreksi Lembar Tim Tagih
           </DropdownItem>
           <DropdownItem
             key="edit"
@@ -116,6 +131,10 @@ function Actions({ user }: Props) {
         isLoading={isLoading}
         onDelete={deleteHandler}
         diclosure={{ isOpen: isDeleteOpen, onOpenChange: onDeleteOpenChange }}
+      />
+      <FormKoreksiLembar
+        user={user}
+        diclosure={{ isOpen: isKoreksiOpen, onOpenChange: onKoreksiOpenChange }}
       />
     </>
   );

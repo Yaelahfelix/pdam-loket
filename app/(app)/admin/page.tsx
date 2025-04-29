@@ -16,6 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatRupiah } from "@/lib/utils";
+import { formatDate } from "date-fns";
+import { id } from "date-fns/locale";
 
 const Home = () => {
   const classNames = React.useMemo(
@@ -208,7 +210,11 @@ const Home = () => {
                     <TableCell>{data.nopel}</TableCell>
                     <TableCell>{data.nama}</TableCell>
                     <TableCell>{data.alamat}</TableCell>
-                    <TableCell>{data.tglPasang}</TableCell>
+                    <TableCell>
+                      {formatDate(data.tglPasang, "dd MMM yyyy", {
+                        locale: id,
+                      })}
+                    </TableCell>
                     <TableCell>{formatRupiah(data.total)}</TableCell>
                   </TableRow>
                 ))}

@@ -33,10 +33,6 @@ export const POST = async (request: NextRequest) => {
     await db.query("START TRANSACTION");
 
     try {
-      await db.query(`CREATE TABLE IF NOT EXISTS temp_posting_log (
-  nopel VARCHAR(255) PRIMARY KEY
-);
-`);
       const [customers] = await db.query<RowDataPacket[]>(
         `SELECT * FROM pelanggan_periode 
          WHERE periode = ? AND status = 1
@@ -131,10 +127,6 @@ export const POST = async (request: NextRequest) => {
             status: "NO_TAGIHAN",
           });
         }
-
-        const query = "INSERT INTO temp_posting_log VALUES (?)";
-
-        await db.query(query, customer.no_pelanggan);
       }
 
       const backupQuery = `

@@ -29,12 +29,14 @@ interface MonthPickerProps {
   currentMonth: Date;
   onMonthChange: (newMonth: Date) => void;
   isDisabled?: boolean;
+  className?: string;
 }
 
 export default function MonthPicker({
   currentMonth,
   onMonthChange,
   isDisabled = false,
+  className,
 }: MonthPickerProps) {
   const [currentYear, setCurrentYear] = React.useState(
     format(currentMonth, "yyyy")
@@ -65,7 +67,9 @@ export default function MonthPicker({
       isTriggerDisabled={isDisabled}
     >
       <PopoverTrigger>
-        <Button variant="bordered">{format(currentMonth, "MMM yyyy")}</Button>
+        <Button variant="bordered" className={className}>
+          {format(currentMonth, "MMM yyyy")}
+        </Button>
       </PopoverTrigger>
       <PopoverContent>
         <div className="p-3">

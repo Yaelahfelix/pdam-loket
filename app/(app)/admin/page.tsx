@@ -42,13 +42,6 @@ const Home = () => {
 
   return (
     <div className="p-20">
-      <div className="flex justify-between">
-        <div className="w-4/12">
-          <h1 className="text-3xl">Selamat Datang di Dashboard</h1>
-          <h1 className="text-5xl mt-3 font-bold">Loket PDAM</h1>
-        </div>
-      </div>
-      <Divider className="my-5" />
       {!isLoading && !isLoadingBacameter ? (
         <>
           <div className="flex gap-5 justify-between flex-col">

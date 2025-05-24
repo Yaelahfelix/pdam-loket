@@ -39,7 +39,7 @@ export const Login = () => {
 
   const handleLogin = useCallback(
     async (
-    values: LoginFormType,
+      values: LoginFormType,
       { setFieldError }: FormikHelpers<LoginFormType>
     ) => {
       setIsLoading(true);
@@ -109,30 +109,30 @@ export const Login = () => {
           onSubmit={handleLogin}
         >
           {({ values, errors, touched, handleChange, handleSubmit }) => (
-            <>
-              <div className="flex flex-col w-1/2 gap-4 mb-4">
-                <Input
-                  variant="bordered"
-                  label="Username"
-                  type="text"
-                  value={values.username}
-                  isInvalid={!!errors.username && !!touched.username}
-                  errorMessage={errors.username}
-                  onChange={handleChange("username")}
-                />
-                <Input
-                  variant="bordered"
-                  label="Password"
-                  type="password"
-                  value={values.password}
-                  isInvalid={!!errors.password && !!touched.password}
-                  errorMessage={errors.password}
-                  onChange={handleChange("password")}
-                />
-              </div>
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col w-1/2 gap-4 mb-4"
+            >
+              <Input
+                variant="bordered"
+                label="Username"
+                type="text"
+                value={values.username}
+                isInvalid={!!errors.username && !!touched.username}
+                errorMessage={errors.username}
+                onChange={handleChange("username")}
+              />
+              <Input
+                variant="bordered"
+                label="Password"
+                type="password"
+                value={values.password}
+                isInvalid={!!errors.password && !!touched.password}
+                errorMessage={errors.password}
+                onChange={handleChange("password")}
+              />
 
               <Button
-                onPress={() => handleSubmit()}
                 variant="flat"
                 color="primary"
                 isLoading={isLoading}
@@ -140,7 +140,7 @@ export const Login = () => {
               >
                 Login
               </Button>
-            </>
+            </form>
           )}
         </Formik>
       ) : (

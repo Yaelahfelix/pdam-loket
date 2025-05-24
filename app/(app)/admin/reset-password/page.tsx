@@ -13,22 +13,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { da } from "date-fns/locale";
+import { useRouter } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 export default function ResetPasswordPage() {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const Router = useRouter();
 
   const validationSchema = Yup.object({
     oldPassword: Yup.string().required("Old password is required"),
     newPassword: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-      )
       .notOneOf(
         [Yup.ref("oldPassword")],
         "New password cannot be the same as old password"
@@ -48,30 +48,37 @@ export default function ResetPasswordPage() {
     validationSchema,
     onSubmit: async (values) => {
       try {
-        // Simulate API call
-        console.log("Submitting password reset with values:", values);
+        const session = await getSession();
+        setErrorMsg("");
+        const response = await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: session?.session.username,
+            oldPassword: values.oldPassword,
+            newPassword: values.newPassword,
+          }),
+        });
+        const data = await response.json();
+        console.log("Response from password reset:", data);
+        if (response.status !== 200) {
+          return setErrorMsg(data.message || "Failed to update password");
+        }
 
-        // In a real application, you would call your API here
-        // await resetPasswordApi(values);
-
-        // Simulate successful response
         setIsSuccess(true);
-        setIsError(false);
         formik.resetForm();
-
-        // Clear success message after 5 seconds
-        setTimeout(() => {
-          setIsSuccess(false);
-        }, 5000);
-      } catch (error) {
+        Router.push("/admin");
+      } catch (error: any) {
         console.error("Error resetting password:", error);
-        setIsError(true);
+        setErrorMsg(error?.message || "Failed to update password");
         setIsSuccess(false);
       }
     },
   });
 
-  const togglePasswordVisibility = (field) => {
+  const togglePasswordVisibility = (field: any) => {
     switch (field) {
       case "oldPassword":
         setShowOldPassword(!showOldPassword);
@@ -88,7 +95,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
+    <div className="flex justify-center items-center min-h-screen  p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
@@ -101,12 +108,12 @@ export default function ResetPasswordPage() {
         <CardContent>
           <form onSubmit={formik.handleSubmit} className="space-y-6">
             {isSuccess && (
-              <Alert>Password has been successfully updated.</Alert>
+              <Alert color="success">
+                Password has been successfully updated.
+              </Alert>
             )}
 
-            {isError && (
-              <Alert>Failed to update password. Please try again.</Alert>
-            )}
+            {errorMsg && <Alert color="danger">{errorMsg}</Alert>}
 
             <div className="space-y-2">
               <div className="relative">

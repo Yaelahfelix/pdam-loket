@@ -42,6 +42,12 @@ export const UserDropdown = ({ user }: { user: User }) => {
           <p>{user.username}</p>
         </DropdownItem>
         <DropdownItem
+          key="reset-password"
+          onPress={() => router.push("/admin/reset-password")}
+        >
+          Reset Password
+        </DropdownItem>
+        <DropdownItem
           key="logout"
           color="danger"
           className="text-danger"
